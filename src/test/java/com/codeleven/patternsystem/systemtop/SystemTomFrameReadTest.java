@@ -13,8 +13,8 @@ public class SystemTomFrameReadTest {
     @Test
     public void testFrameRead() throws IOException {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
-        SystemTopPatternParser parser = new SystemTopPatternParser();
-        List<UniFrame> uniFrames = parser.readFrames(is);
+        SystemTopPatternParser parser = new SystemTopPatternParser(is);
+        List<UniFrame> uniFrames = parser.readFrames();
         for (UniFrame uniFrame : uniFrames) {
             System.out.println(uniFrame);
         }
@@ -23,8 +23,8 @@ public class SystemTomFrameReadTest {
     @Test
     public void testFramePrettyOutput() throws IOException {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
-        SystemTopPatternParser parser = new SystemTopPatternParser();
-        List<UniFrame> uniFrames = parser.readFrames(is);
+        SystemTopPatternParser parser = new SystemTopPatternParser(is);
+        List<UniFrame> uniFrames = parser.readFrames();
         String textOutput = PrettyFramesOutputStrategy.getTextOutput(uniFrames, true);
         System.out.println(textOutput);
     }
@@ -32,8 +32,8 @@ public class SystemTomFrameReadTest {
     @Test
     public void testFramePrettyOutputImage() throws IOException {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
-        SystemTopPatternParser parser = new SystemTopPatternParser();
-        List<UniFrame> uniFrames = parser.readFrames(is);
+        SystemTopPatternParser parser = new SystemTopPatternParser(is);
+        List<UniFrame> uniFrames = parser.readFrames();
         PrettyFramesOutputStrategy.getImageOutput(uniFrames);
 
     }
