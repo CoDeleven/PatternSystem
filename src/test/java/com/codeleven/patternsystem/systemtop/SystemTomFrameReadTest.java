@@ -1,7 +1,7 @@
 package com.codeleven.patternsystem.systemtop;
 
 
-import com.codeleven.patternsystem.dto.UniFrame;
+import com.codeleven.patternsystem.entity.UniFrame;
 import com.codeleven.patternsystem.output.PrettyFramesOutputStrategy;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopPatternParser;
 import org.junit.jupiter.api.Test;

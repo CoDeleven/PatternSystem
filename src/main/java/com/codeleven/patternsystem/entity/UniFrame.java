@@ -1,4 +1,4 @@
-package com.codeleven.patternsystem.dto;
+package com.codeleven.patternsystem.entity;
 
 /**
  * 统一的针迹点

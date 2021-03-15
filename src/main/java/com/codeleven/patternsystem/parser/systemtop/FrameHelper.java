@@ -1,6 +1,6 @@
 package com.codeleven.patternsystem.parser.systemtop;
 
-import com.codeleven.patternsystem.dto.UniFrame;
+import com.codeleven.patternsystem.entity.UniFrame;
 
 import java.util.LinkedList;
 import java.util.List;

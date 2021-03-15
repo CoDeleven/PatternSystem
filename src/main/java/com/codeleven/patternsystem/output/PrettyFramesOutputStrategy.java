@@ -1,6 +1,6 @@
 package com.codeleven.patternsystem.output;
 
-import com.codeleven.patternsystem.dto.UniFrame;
+import com.codeleven.patternsystem.entity.UniFrame;
 import com.codeleven.patternsystem.graphics.XYGraphics;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
 

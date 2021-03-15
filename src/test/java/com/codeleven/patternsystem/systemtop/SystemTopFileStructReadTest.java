@@ -1,14 +1,11 @@
 package com.codeleven.patternsystem.systemtop;
 
-import com.codeleven.patternsystem.dto.UniFrame;
-import com.codeleven.patternsystem.dto.UniPattern;
-import com.codeleven.patternsystem.output.PrettyFramesOutputStrategy;
+import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopPatternParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 public class SystemTopFileStructReadTest {
     @Test

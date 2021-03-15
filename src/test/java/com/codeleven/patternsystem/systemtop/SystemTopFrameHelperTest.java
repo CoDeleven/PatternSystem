@@ -1,11 +1,9 @@
 package com.codeleven.patternsystem.systemtop;
 
-import com.codeleven.patternsystem.dto.UniFrame;
+import com.codeleven.patternsystem.entity.UniFrame;
 import com.codeleven.patternsystem.parser.systemtop.FrameHelper;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 

@@ -1,7 +1,7 @@
 package com.codeleven.patternsystem.parser.systemtop;
 
-import com.codeleven.patternsystem.dto.UniFrame;
-import com.codeleven.patternsystem.dto.UniPattern;
+import com.codeleven.patternsystem.entity.UniFrame;
+import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.parser.IPatternParser;
 
 import java.io.ByteArrayOutputStream;
@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode.*;
 import static com.codeleven.patternsystem.parser.systemtop.SystemTopStruct.*;

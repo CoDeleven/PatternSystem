@@ -1,6 +1,4 @@
-package com.codeleven.patternsystem.dto;
-
-import com.codeleven.patternsystem.parser.PatternSystemVendor;
+package com.codeleven.patternsystem.entity;
 
 import java.util.List;
 
@@ -67,5 +65,13 @@ public class UniPattern {
 
     public void setFrames(List<UniFrame> frames) {
         this.frames = frames;
+    }
+
+    public int getHeight(){
+        return this.maxY - this.minY;
+    }
+
+    public int getWidth(){
+        return this.maxX - this.minX;
     }
 }
