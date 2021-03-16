@@ -8,6 +8,8 @@ import com.codeleven.patternsystem.output.NPTOutputHelper;
 import com.codeleven.patternsystem.output.PrettyFramesOutputStrategy;
 import com.codeleven.patternsystem.parser.systemtop.PatternTransformHelper;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopPatternParser;
+import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -47,7 +49,9 @@ public class SystemTomFrameReadTest {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
         SystemTopPatternParser parser = new SystemTopPatternParser(is);
         UniPattern uniPattern = parser.readAll();
-        NPTOutputHelper.output(uniPattern);
+        ByteArrayOutputStream output = NPTOutputHelper.output(uniPattern);
+        FileOutputStream fos = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\test2.NPT");
+        fos.write(output.toByteArray());
 
         FileInputStream fis = new FileInputStream("C:\\Users\\Administrator\\Desktop\\test2.NPT");
         SystemTopPatternParser parser2 = new SystemTopPatternParser(fis);
@@ -57,7 +61,7 @@ public class SystemTomFrameReadTest {
 
         for (int i = 0; i < uniPattern.getFrames().size(); i++) {
             assert uniPattern.getFrames().get(i).getY() == uniPattern2.getFrames().get(i).getY();
-            assert uniPattern.getFrames().get(i).getX() == uniPattern2.getFrames().get(i).getX();
+            Assertions.assertEquals(uniPattern.getFrames().get(i).getX(), uniPattern2.getFrames().get(i).getX());
             assert uniPattern.getFrames().get(i).getControlCode() == uniPattern2.getFrames().get(i).getControlCode();
         }
     }
@@ -98,5 +102,13 @@ public class SystemTomFrameReadTest {
         PatternTransformHelper helper = new PatternTransformHelper(uniPattern, operations);
         helper.doTransform();
         NPTOutputHelper.output(uniPattern);
+    }
+
+    @Test
+    public void testChildPattern() throws IOException {
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/test.NPT");
+        SystemTopPatternParser parser = new SystemTopPatternParser(is);
+        UniPattern uniPattern = parser.readAll();
+        Assertions.assertEquals(9, uniPattern.getChildPatterns().size());
     }
 }

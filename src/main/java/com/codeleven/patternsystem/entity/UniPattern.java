@@ -10,6 +10,15 @@ public class UniPattern {
     private int maxX;                       // 最大的X值
     private int maxY;                       // 最大的Y值
     private List<UniFrame> frames;          // 针迹
+    private List<ChildPattern> childPatterns;
+
+    public List<ChildPattern> getChildPatterns() {
+        return childPatterns;
+    }
+
+    public void setChildPatterns(List<ChildPattern> childPatterns) {
+        this.childPatterns = childPatterns;
+    }
 
     public String getPatternName() {
         return patternName;
