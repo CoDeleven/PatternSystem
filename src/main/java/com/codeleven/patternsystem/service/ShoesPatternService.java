@@ -91,6 +91,7 @@ public class ShoesPatternService extends BaseService<ShoesPatternDto> {
             SystemTopPatternParser parser = new SystemTopPatternParser(is);
             UniPattern uniPattern = parser.readAll();
             PatternTransformHelper helper = new PatternTransformHelper(uniPattern, vo.getPatternUpdateOperationList());
+            helper.setTargetPatternNo(vo.getChildPatternNo());
             helper.doTransform();
             ByteArrayOutputStream output = NPTOutputHelper.output(uniPattern);
             minioClient.putObject(MinioConfig.PATTERN_SYSTEM_BUCKET, patternDataUrl, new ByteArrayInputStream(output.toByteArray()), ContentType.DEFAULT_BINARY.getMimeType());
