@@ -24,8 +24,6 @@ public class SystemTopPatternParser implements IPatternParser {
     public final static byte DIMENSION_MIN_Y = 3;
     public final static byte DIMENSION_MAX_Y = 4;
 
-    // 标识文件结束的四个字节
-    private final static byte[] FILE_END_CODE = new byte[]{(byte) 0x1F, 0, 0, 0};
     private final byte[] patternData;
 
     public SystemTopPatternParser(InputStream inputStream) throws IOException {

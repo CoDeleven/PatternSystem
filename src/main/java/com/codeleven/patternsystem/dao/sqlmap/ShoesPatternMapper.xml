@@ -6,6 +6,10 @@
         FROM pattern_system.ps_shoes_pattern
     </select>
 
+    <select id="findPatternById" resultType="com.codeleven.patternsystem.dto.ShoesPatternDto">
+        SELECT * FROM pattern_system.ps_shoes_pattern WHERE id=#{id};
+    </select>
+
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.codeleven.patternsystem.dto.ShoesPatternDto">
         INSERT INTO
             pattern_system.ps_shoes_pattern(`vendor`, `width`, `height`, `shoes_size`,

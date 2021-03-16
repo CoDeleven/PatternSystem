@@ -5,6 +5,7 @@ import com.codeleven.patternsystem.common.MessageType;
 import com.codeleven.patternsystem.dto.Page;
 import com.codeleven.patternsystem.dto.ShoesPatternDto;
 import com.codeleven.patternsystem.service.ShoesPatternService;
+import com.codeleven.patternsystem.vo.ShoesPatternUpdateVO;
 import com.codeleven.patternsystem.vo.ShoesPatternVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,4 +32,11 @@ public class ShoesPatternController {
 
         return new AjaxResult("ok", MessageType.CONFIRM.getCode(), null);
     }
+
+    @PostMapping("/pattern/update")
+    public AjaxResult update(@RequestBody ShoesPatternUpdateVO vo){
+        shoesPatternService.update(vo);
+        return new AjaxResult("ok", MessageType.CONFIRM.getCode(), null);
+    }
+
 }

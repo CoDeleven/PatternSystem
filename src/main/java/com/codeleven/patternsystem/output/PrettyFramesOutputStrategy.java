@@ -1,12 +1,18 @@
 package com.codeleven.patternsystem.output;
 
+import cn.hutool.core.util.NumberUtil;
 import com.codeleven.patternsystem.entity.UniFrame;
+import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.graphics.XYGraphics;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
+import com.codeleven.patternsystem.parser.systemtop.SystemTopStruct;
 
 import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class PrettyFramesOutputStrategy {
 
@@ -34,7 +40,7 @@ public class PrettyFramesOutputStrategy {
     }
 
     public static void getImageOutput(List<UniFrame> frames) throws IOException {
-        XYGraphics graphics = XYGraphics.createGraphics(2461, 897);
+        XYGraphics graphics = XYGraphics.createGraphics(2500, 2500);
         UniFrame lastFrame = UniFrame.ZERO_FRAME;
         for (UniFrame frame : frames) {
             if (frame.getControlCode() == SystemTopControlCode.HIGH_SEWING.getCode()) {

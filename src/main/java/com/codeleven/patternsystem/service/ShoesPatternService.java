@@ -9,7 +9,9 @@ import com.codeleven.patternsystem.dto.Page;
 import com.codeleven.patternsystem.dto.ShoesPatternDto;
 import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.parser.PatternSystemVendor;
+import com.codeleven.patternsystem.parser.systemtop.PatternTransformHelper;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopPatternParser;
+import com.codeleven.patternsystem.vo.ShoesPatternUpdateVO;
 import com.codeleven.patternsystem.vo.ShoesPatternVO;
 import io.minio.MinioClient;
 import io.minio.errors.*;
@@ -75,5 +77,23 @@ public class ShoesPatternService extends BaseService<ShoesPatternDto> {
         // 上传到 对象存储服务 里获取到的封面URL
         dto.setCoverUrl(vo.getCoverPath());
         return dto;
+    }
+
+    public void update(ShoesPatternUpdateVO vo) {
+        ShoesPatternDto shoesPatternDto = this.shoesPatternMapper.findPatternById(vo.getShoesPatternId());
+        String patternDataUrl = shoesPatternDto.getPatternDataUrl();
+        try{
+            MinioClient minioClient = new MinioClient(MinioConfig.MINIO_DOMAIN, MINIO_ACCESS_KEY, MINIO_SECRET_KEY);
+            // 下载数据文件
+            InputStream is = minioClient.getObject(MinioConfig.PATTERN_SYSTEM_BUCKET, patternDataUrl);
+            // 解析花样文件
+            SystemTopPatternParser parser = new SystemTopPatternParser(is);
+            UniPattern uniPattern = parser.readAll();
+            PatternTransformHelper helper = new PatternTransformHelper(uniPattern, vo.getPatternUpdateOperationList());
+            helper.doTransform();
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

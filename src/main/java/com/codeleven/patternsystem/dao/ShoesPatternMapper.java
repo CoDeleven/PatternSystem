@@ -1,6 +1,7 @@
 package com.codeleven.patternsystem.dao;
 
 import com.codeleven.patternsystem.dto.ShoesPatternDto;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,4 +29,6 @@ public interface ShoesPatternMapper {
      * @return 更新成功条数
      */
     int update(ShoesPatternDto patternDto);
+
+    ShoesPatternDto findPatternById(@Param("id") int id);
 }
