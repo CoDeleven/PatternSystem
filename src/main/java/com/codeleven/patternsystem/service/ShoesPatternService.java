@@ -8,6 +8,7 @@ import com.codeleven.patternsystem.dao.ShoesPatternMapper;
 import com.codeleven.patternsystem.dto.Page;
 import com.codeleven.patternsystem.dto.ShoesPatternDto;
 import com.codeleven.patternsystem.entity.UniPattern;
+import com.codeleven.patternsystem.output.NPTOutputHelper;
 import com.codeleven.patternsystem.parser.PatternSystemVendor;
 import com.codeleven.patternsystem.parser.systemtop.PatternTransformHelper;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopPatternParser;
@@ -15,12 +16,12 @@ import com.codeleven.patternsystem.vo.ShoesPatternUpdateVO;
 import com.codeleven.patternsystem.vo.ShoesPatternVO;
 import io.minio.MinioClient;
 import io.minio.errors.*;
+import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -91,7 +92,8 @@ public class ShoesPatternService extends BaseService<ShoesPatternDto> {
             UniPattern uniPattern = parser.readAll();
             PatternTransformHelper helper = new PatternTransformHelper(uniPattern, vo.getPatternUpdateOperationList());
             helper.doTransform();
-
+            ByteArrayOutputStream output = NPTOutputHelper.output(uniPattern);
+            minioClient.putObject(MinioConfig.PATTERN_SYSTEM_BUCKET, patternDataUrl, new ByteArrayInputStream(output.toByteArray()), ContentType.DEFAULT_BINARY.getMimeType());
         } catch (Exception e){
             e.printStackTrace();
         }

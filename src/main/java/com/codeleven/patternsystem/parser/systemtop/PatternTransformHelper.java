@@ -40,5 +40,7 @@ public class PatternTransformHelper {
         for (UniFrame frame : pattern.getFrames()) {
             frame.setY(frame.getY() + num);
         }
+        pattern.setMinY(pattern.getMinY() + num);
+        pattern.setMaxY(pattern.getMaxY() + num);
     }
 }

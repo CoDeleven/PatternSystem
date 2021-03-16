@@ -8,11 +8,12 @@ import com.codeleven.patternsystem.parser.systemtop.SystemTopStruct;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import static com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode.*;
 
 public class NPTOutputHelper {
-    public static void output(UniPattern pattern) throws IOException {
+    public static ByteArrayOutputStream output(UniPattern pattern) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byteArrayOutputStream.write(SystemTopStruct.FILE_START_CODE);
         byteArrayOutputStream.write("NEW".getBytes());
@@ -38,9 +39,7 @@ public class NPTOutputHelper {
         byteArrayOutputStream.write(new byte[12]);
 
         byteArrayOutputStream.write(frameByteArray.toByteArray());
-
-        FileOutputStream fos = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\test2.NPT");
-        fos.write(byteArrayOutputStream.toByteArray());
+        return byteArrayOutputStream;
     }
 
     private static byte[] convertUniFrame(UniFrame lastFrame, UniFrame uniFrame) throws IOException {

@@ -74,8 +74,14 @@ public class BaseEnumHandler<E extends BaseEnum> extends BaseTypeHandler<E> {
      */
     private E locateEnumStatus(String value) {
         for (E e : enums) {
-            if (e.getValue().equals(value)) {
-                return e;
+            if(e.getValue() instanceof Integer){
+                if (String.valueOf(e.getValue()).equals(value)) {
+                    return e;
+                }
+            }else if(e.getValue() instanceof String){
+                if(e.getValue().equals(value)){
+                    return e;
+                }
             }
         }
         throw new IllegalArgumentException("未知的枚举类型：" + value + ",请核对" + type.getSimpleName());
