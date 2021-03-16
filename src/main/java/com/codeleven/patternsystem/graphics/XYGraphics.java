@@ -21,7 +21,7 @@ import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 public class XYGraphics extends Graphics2D {
-    private static final int SCALE = 5;        // 10像素 = 1mm
+    private static final int SCALE = 1;        // 10像素 = 1mm
     private static final int PRESERVE_PX = 100; // 周围预留100个像素
     private final Graphics2D coreGraphics;
     private final BufferedImage coreImage;
@@ -89,7 +89,7 @@ public class XYGraphics extends Graphics2D {
     }
 
     private int computeY(int y){
-        y = y > 0 ? -y : y;
+        y = y > 0 ? -y : Math.abs(y);
         return y += originY;
     }
 
