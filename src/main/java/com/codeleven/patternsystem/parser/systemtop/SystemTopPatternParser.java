@@ -98,10 +98,10 @@ public class SystemTopPatternParser implements IPatternParser {
     }
 
     public int readTotalFrameCount() {
-        if (this.checkPatternStructDataAvailable(TOTAL_FRAME_COUNT_OFFSET)) {
+        if (this.checkPatternStructDataAvailable(SEWING_FRAME_COUNT_OFFSET)) {
             byte[] readBytes = new byte[2];
-            readBytes[0] = this.patternData[TOTAL_FRAME_COUNT_OFFSET.getOffset()];
-            readBytes[1] = this.patternData[TOTAL_FRAME_COUNT_OFFSET.getOffset() + 1];
+            readBytes[0] = this.patternData[SEWING_FRAME_COUNT_OFFSET.getOffset()];
+            readBytes[1] = this.patternData[SEWING_FRAME_COUNT_OFFSET.getOffset() + 1];
             int totalFrameCount = readBytes[1] << 8 | readBytes[0];
             // 上亿系统的特色，数据文件记录的总针数和显示的针数差1。
             return totalFrameCount;
