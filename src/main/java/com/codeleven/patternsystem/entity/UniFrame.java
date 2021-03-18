@@ -47,6 +47,11 @@ public class UniFrame {
         this.controlCode = controlCode;
     }
 
+    public UniFrame copyFrame(){
+        UniFrame newFrame = new UniFrame(this.x, this.y, this.controlCode);
+        return newFrame;
+    }
+
     @Override
     public String toString() {
         return "UniFrame{" +

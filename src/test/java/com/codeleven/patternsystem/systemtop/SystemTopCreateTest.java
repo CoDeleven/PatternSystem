@@ -1,6 +1,6 @@
 package com.codeleven.patternsystem.systemtop;
 
-import com.codeleven.patternsystem.common.AjaxResult;
+import com.codeleven.patternsystem.common.HttpResponse;
 import com.codeleven.patternsystem.common.PatternUpdateOperation;
 import com.codeleven.patternsystem.common.ShoesSize;
 import com.codeleven.patternsystem.controller.ShoesPatternController;
@@ -47,9 +47,9 @@ public class SystemTopCreateTest {
         vo.setSize(ShoesSize.SHOES_SIZE_36.getValue());
         vo.setPatternDataPath("pattern-file/002.NPT");
         vo.setCoverPath("cover-file/img032.jpg");
-        AjaxResult ajaxResult = this.restTemplate.postForObject("http://localhost:" + port + PATH, vo, AjaxResult.class);
-        Assert.assertNotNull(ajaxResult);
-        Assert.assertEquals(ajaxResult.getMessage(), "ok");
+        HttpResponse httpResponse = this.restTemplate.postForObject("http://localhost:" + port + PATH, vo, HttpResponse.class);
+        Assert.assertNotNull(httpResponse);
+        Assert.assertEquals(httpResponse.getMessage(), "ok");
     }
 
     @Test
@@ -62,8 +62,8 @@ public class SystemTopCreateTest {
         operation.setNum(20);
         operationList.add(operation);
         vo.setPatternUpdateOperationList(operationList);
-        AjaxResult ajaxResult = this.restTemplate.postForObject("http://localhost:" + port + UPDATE_PATH, vo, AjaxResult.class);
-        Assert.assertNotNull(ajaxResult);
-        Assert.assertEquals(ajaxResult.getMessage(), "ok");
+        HttpResponse httpResponse = this.restTemplate.postForObject("http://localhost:" + port + UPDATE_PATH, vo, HttpResponse.class);
+        Assert.assertNotNull(httpResponse);
+        Assert.assertEquals(httpResponse.getMessage(), "ok");
     }
 }

@@ -30,7 +30,7 @@ public class SystemTomFrameReadTest {
 
     @Test
     public void testFramePrettyOutput() throws IOException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/test.NPT");
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
         SystemTopPatternParser parser = new SystemTopPatternParser(is);
         List<UniFrame> uniFrames = parser.readFrames();
         String textOutput = PrettyFramesOutputStrategy.getTextOutput(uniFrames, true);
@@ -142,5 +142,38 @@ public class SystemTomFrameReadTest {
         SystemTopPatternParser parser = new SystemTopPatternParser(is);
         UniPattern uniPattern = parser.readAll();
         Assertions.assertEquals(9, uniPattern.getChildPatterns().size());
+    }
+
+    @Test
+    public void goTransform() throws IOException {
+        SystemTopPatternParser parser = new SystemTopPatternParser(new FileInputStream("C:\\Users\\Administrator\\Desktop\\043-1.NPT"));
+        UniPattern uniPattern = parser.readAll();
+
+        List<PatternUpdateOperation> operations = new ArrayList<>();
+        PatternUpdateOperation operation = new PatternUpdateOperation();
+        operation.setOperationCode("move-y");
+        operation.setNum(310);
+        operations.add(operation);
+        PatternTransformHelper helper = new PatternTransformHelper(uniPattern, operations);
+        helper.doTransform();
+        ByteArrayOutputStream output = NPTOutputHelper.output(uniPattern);
+        FileOutputStream fos = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\043-1.NPT");
+        fos.write(output.toByteArray());
+    }
+
+    @Test
+    public void testExchange() throws IOException {
+        SystemTopPatternParser parser = new SystemTopPatternParser(new FileInputStream("C:\\Users\\Administrator\\Desktop\\002.NPT"));
+        UniPattern uniPattern = parser.readAll();
+
+        List<PatternUpdateOperation> operations = new ArrayList<>();
+        PatternUpdateOperation operation = new PatternUpdateOperation();
+        operation.setOperationCode("exchange-s-e");
+        operations.add(operation);
+        PatternTransformHelper helper = new PatternTransformHelper(uniPattern, operations);
+        helper.doTransform();
+        ByteArrayOutputStream output = NPTOutputHelper.output(uniPattern);
+        FileOutputStream fos = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\002-2.NPT");
+        fos.write(output.toByteArray());
     }
 }

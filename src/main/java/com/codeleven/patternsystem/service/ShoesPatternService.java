@@ -16,6 +16,7 @@ import com.codeleven.patternsystem.vo.ShoesPatternUpdateVO;
 import com.codeleven.patternsystem.vo.ShoesPatternVO;
 import io.minio.MinioClient;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,10 +36,17 @@ public class ShoesPatternService extends BaseService<ShoesPatternDto> {
     @Autowired
     private ShoesPatternMapper shoesPatternMapper;
 
-    public Page<ShoesPatternDto> queryForPage(int page, int length, Map<String, Object> param) {
-        Page<ShoesPatternDto> shoesPatternDtoPage = this.queryForPage(page, length, () -> {
+    public Page<ShoesPatternDto> queryForPage(int page, int length, Map<String, Object> param) throws InvalidPortException, InvalidEndpointException, IOException, InvalidKeyException, NoSuchAlgorithmException, InsufficientDataException, InvalidArgumentException, InternalException, NoResponseException, InvalidBucketNameException, XmlPullParserException, ErrorResponseException, InvalidExpiresRangeException {
+        Page<ShoesPatternDto> shoesPatternDtoPage = super.queryForPage(page, length, () -> {
             shoesPatternMapper.queryForPage(param);
         });
+        for (ShoesPatternDto shoesPatternDto : shoesPatternDtoPage.getRoot()) {
+            // 获取数据文件
+            MinioClient minioClient = new MinioClient(MinioConfig.MINIO_DOMAIN, MINIO_ACCESS_KEY, MINIO_SECRET_KEY);
+            // 下载数据文件
+            String url = minioClient.presignedGetObject(MinioConfig.PATTERN_SYSTEM_BUCKET, shoesPatternDto.getCoverUrl(), 3600 * 24);
+            shoesPatternDto.setCoverUrl(url);
+        }
         return shoesPatternDtoPage;
     }
 
