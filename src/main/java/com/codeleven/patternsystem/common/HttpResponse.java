@@ -4,17 +4,12 @@ import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
 
-public class AjaxResult implements Serializable {
+public class HttpResponse implements Serializable {
 
     /**
      * 序列号
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * 状态码，默认为200
-     */
-    private final int statuCode = HttpStatus.OK.value();
 
     /**
      * 消息
@@ -24,21 +19,17 @@ public class AjaxResult implements Serializable {
     /**
      * 消息类型
      */
-    private String messageType;
+    private int errorCode;
 
     /**
      * 数据对象
      */
     private Object data;
 
-    public AjaxResult(String message, String messageType, Object data) {
+    public HttpResponse(String message, int errorCode, Object data) {
         this.message = message;
-        this.messageType = messageType;
+        this.errorCode = errorCode;
         this.data = data;
-    }
-
-    public int getStatuCode() {
-        return statuCode;
     }
 
     public String getMessage() {
@@ -49,12 +40,12 @@ public class AjaxResult implements Serializable {
         this.message = message;
     }
 
-    public String getMessageType() {
-        return messageType;
+    public int getErrorCode() {
+        return errorCode;
     }
 
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
     }
 
     public Object getData() {

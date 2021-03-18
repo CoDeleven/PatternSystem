@@ -20,19 +20,10 @@ public class Page<T> {
     private long records;
 
     /**
-     * 异常消息
-     */
-    private List<String> message;
-
-    /**
      * 分页数据
      */
     private List<T> root;
 
-    /**
-     * 状态
-     */
-    private int code;
 
     public Page(com.github.pagehelper.Page<T> githubPage) {
         this.page = githubPage.getPageNum();
@@ -45,7 +36,6 @@ public class Page<T> {
         this.page = 1;
         this.total = 0;
         this.records = 0;
-        this.code = 0;
     }
 
     public int getPage() {
@@ -72,27 +62,11 @@ public class Page<T> {
         this.records = records;
     }
 
-    public List<String> getMessage() {
-        return message;
-    }
-
-    public void setMessage(List<String> message) {
-        this.message = message;
-    }
-
     public List<T> getRoot() {
         return root;
     }
 
     public void setRoot(List<T> root) {
         this.root = root;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
     }
 }
