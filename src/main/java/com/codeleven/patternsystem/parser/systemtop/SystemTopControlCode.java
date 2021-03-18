@@ -6,8 +6,8 @@ package com.codeleven.patternsystem.parser.systemtop;
 public enum SystemTopControlCode {
     SKIP(0x1B, "空送"), HIGH_SEWING(0x61, "高速车缝"), MID_HIGH_SEWING(0x41, "中高速车缝"),
     MID_LOW_SEWING(0x21, "中低速车缝"), LOW_SEWING(0x01, "低速车缝"), CUT(0x02, "剪线"),
-    CONTINUE_SKIP(0x03, "持续移动"), DROP_NEEDLE(0x07, "下针"),
-    UNKNOWN_CODE(0, "未知码");
+    CONTINUE_SKIP(0x03, "持续移动"), DROP_NEEDLE(0x07, "下针"), END(0x1F, "结束标识符"),
+    SECOND_ORIGIN_POINT(0x06, "设置次原点"), UNKNOWN_CODE(0, "未知码");
 
     private int code;
     private String codeName;
@@ -31,11 +31,15 @@ public enum SystemTopControlCode {
      * @return boolean 是否为车缝控制码
      */
     public static boolean isSewingControlCode(int code){
-        return code == HIGH_SEWING.getCode() || code == MID_HIGH_SEWING.getCode() || code == MID_LOW_SEWING.getCode() || code == LOW_SEWING.getCode() || code == DROP_NEEDLE.getCode();
+        return code == HIGH_SEWING.code || code == MID_HIGH_SEWING.code || code == MID_LOW_SEWING.code || code == LOW_SEWING.code || code == DROP_NEEDLE.code;
     }
 
     public static boolean isSkipControlCode(int code){
-        return code == SKIP.getCode();
+        return code == SKIP.code;
+    }
+
+    public static boolean isEndControlCode(int code){
+        return code == END.code;
     }
 
     public static SystemTopControlCode getEnumByCode(int code){

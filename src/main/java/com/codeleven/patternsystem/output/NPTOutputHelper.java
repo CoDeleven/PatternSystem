@@ -101,6 +101,8 @@ public class NPTOutputHelper {
                     byteArrayOutputStream.write(new byte[]{(byte) CONTINUE_SKIP.getCode(), 0x0, convertInt2NTPByte(tempX, negativeX), convertInt2NTPByte(tempY, negativeY)});
                 }
                 byteArrayOutputStream.write(new byte[]{(byte) SKIP.getCode(), 0x0, convertInt2NTPByte(avgXByte, negativeX), convertInt2NTPByte(avgYByte, negativeY)});
+            } else if(SystemTopControlCode.isEndControlCode(uniFrame.getControlCode())){
+                byteArrayOutputStream.write(new byte[]{(byte) END.getCode(), 0, 0, 0});
             } else {
                 System.out.println("需要拆分但控制码不正确:" + uniFrame.getControlCode());
             }
