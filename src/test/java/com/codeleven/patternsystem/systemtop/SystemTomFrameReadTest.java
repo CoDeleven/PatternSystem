@@ -157,7 +157,7 @@ public class SystemTomFrameReadTest {
 
     }
 
-    @Test
+
     public void goTransform() throws IOException {
         SystemTopPatternParser parser = new SystemTopPatternParser(new FileInputStream("C:\\Users\\Administrator\\Desktop\\043-1.NPT"));
         UniPattern uniPattern = parser.readAll();
@@ -174,7 +174,7 @@ public class SystemTomFrameReadTest {
         fos.write(output.toByteArray());
     }
 
-    @Test
+
     public void testExchange() throws IOException {
         SystemTopPatternParser parser = new SystemTopPatternParser(new FileInputStream("C:\\Users\\Administrator\\Desktop\\002.NPT"));
         UniPattern uniPattern = parser.readAll();

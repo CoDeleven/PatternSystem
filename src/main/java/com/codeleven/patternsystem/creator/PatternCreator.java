@@ -71,7 +71,7 @@ public class PatternCreator extends JFrame{
                 File currentDir = new File("C:\\Users\\Administrator\\Desktop");
                 chooser.setCurrentDirectory(currentDir);
                 chooser.setDialogTitle("请选择花样数据...");
-                chooser.setFileFilter(new FileNameExtensionFilter("花样数据格式", "NPT"));
+                chooser.setFileFilter(new FileNameExtensionFilter("花样数据格式", "NPT", "NSP"));
                 chooser.showOpenDialog(PatternCreator.this);
                 File file = chooser.getSelectedFile();
 

@@ -1,8 +1,8 @@
 package com.codeleven.patternsystem.common;
 
 public class MinioConfig {
-    public static final int MINIO_PORT = 38924;
-    public static final String MINIO_IP = "http://server.natappfree.cc";
+    public static final int MINIO_PORT = 80;
+    public static final String MINIO_IP = "http://codeminio.nat300.top";
     public static final String MINIO_DOMAIN = MINIO_IP + ":" + MINIO_PORT;
     public static final String PATTERN_SYSTEM_BUCKET = "pattern-system";
     public static final String PATTERN_PATH = "pattern-file";
