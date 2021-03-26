@@ -14,9 +14,7 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
@@ -82,6 +80,17 @@ public class XYGraphics extends Graphics2D {
 
     public void outputTo(String filePath) throws IOException {
         ImageIO.write(this.coreImage, "PNG", new FileOutputStream(filePath));
+    }
+
+    public OutputStream outputStream(){
+        OutputStream os = new ByteArrayOutputStream();
+
+        try {
+            ImageIO.write(this.coreImage, "PNG", os);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return os;
     }
 
     private int computeX(int x){

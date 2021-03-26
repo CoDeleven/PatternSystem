@@ -1,18 +1,14 @@
 package com.codeleven.patternsystem.output;
 
-import cn.hutool.core.util.NumberUtil;
 import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.graphics.XYGraphics;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopStruct;
 
 import java.awt.*;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class PrettyFramesOutputStrategy {
 
@@ -39,7 +35,7 @@ public class PrettyFramesOutputStrategy {
         return builder.toString();
     }
 
-    public static void getImageOutput(List<UniFrame> frames) throws IOException {
+    public static ByteArrayOutputStream getImageOutput(List<UniFrame> frames) throws IOException {
         XYGraphics graphics = XYGraphics.createGraphics(2500, 2500);
         UniFrame lastFrame = UniFrame.ZERO_FRAME;
         for (UniFrame frame : frames) {
@@ -59,6 +55,7 @@ public class PrettyFramesOutputStrategy {
         UniFrame secondFrame = frames.get(1);
         graphics.drawArrow(firstFrame.getX(), firstFrame.getY(), secondFrame.getX(), secondFrame.getY(), 20);
 
-        graphics.outputTo("C:\\Users\\Administrator\\Desktop\\test.png");
+        ByteArrayOutputStream outputStream = (ByteArrayOutputStream) graphics.outputStream();
+        return outputStream;
     }
 }

@@ -4,6 +4,12 @@
     <select id="queryForPage" resultType="com.codeleven.patternsystem.dto.ShoesPatternDto" parameterType="Map">
         SELECT id, vendor, width, height, shoes_size, name, user_id, cover_url, pattern_data_url, create_time, update_time
         FROM pattern_system.ps_shoes_pattern
+        <if test="pattern_id != null and pattern_id != 0">
+            <where>
+                id = #{pattern_id}
+                limit 0, 1
+            </where>
+        </if>
     </select>
 
     <select id="findPatternById" resultType="com.codeleven.patternsystem.dto.ShoesPatternDto">

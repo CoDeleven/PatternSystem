@@ -1,6 +1,7 @@
 package com.codeleven.patternsystem.dto;
 
 import com.codeleven.patternsystem.common.ShoesSize;
+import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.parser.PatternSystemVendor;
 
 import java.util.Date;
@@ -21,6 +22,15 @@ public class ShoesPatternDto {
     private SimpleUser user;    // 用户
     private String coverUrl;       // 封面
     private String patternDataUrl;  // 花样数据Url（来自文件对象服务）
+    private UniPattern uniPattern;
+
+    public UniPattern getUniPattern() {
+        return uniPattern;
+    }
+
+    public void setUniPattern(UniPattern uniPattern) {
+        this.uniPattern = uniPattern;
+    }
 
     public String getPatternDataUrl() {
         return patternDataUrl;

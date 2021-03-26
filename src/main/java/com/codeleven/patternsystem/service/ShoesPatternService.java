@@ -9,6 +9,7 @@ import com.codeleven.patternsystem.dto.Page;
 import com.codeleven.patternsystem.dto.ShoesPatternDto;
 import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.output.NPTOutputHelper;
+import com.codeleven.patternsystem.output.PrettyFramesOutputStrategy;
 import com.codeleven.patternsystem.parser.PatternSystemVendor;
 import com.codeleven.patternsystem.parser.systemtop.PatternTransformHelper;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopPatternParser;
@@ -25,6 +26,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.codeleven.patternsystem.common.MinioConfig.MINIO_ACCESS_KEY;
@@ -106,5 +109,29 @@ public class ShoesPatternService extends BaseService<ShoesPatternDto> {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public ShoesPatternDto detail(int patternId)  {
+        Map<String, Object> param = new HashMap<>();
+        param.put("pattern_id", patternId);
+        List<ShoesPatternDto> shoesPatternDtos = shoesPatternMapper.queryForPage(param);
+        if(shoesPatternDtos.size() == 0){
+            return null;
+        }
+
+        ShoesPatternDto shoesPatternDto = shoesPatternDtos.get(0);
+        try{
+            MinioClient minioClient = new MinioClient(MinioConfig.MINIO_DOMAIN, MINIO_ACCESS_KEY, MINIO_SECRET_KEY);
+            // 下载数据文件
+            InputStream is = minioClient.getObject(MinioConfig.PATTERN_SYSTEM_BUCKET, shoesPatternDto.getPatternDataUrl());
+            SystemTopPatternParser parser = new SystemTopPatternParser(is);
+            UniPattern uniPattern = parser.readAll();
+            // 设置UniPattern
+            shoesPatternDto.setUniPattern(uniPattern);
+            return shoesPatternDto;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

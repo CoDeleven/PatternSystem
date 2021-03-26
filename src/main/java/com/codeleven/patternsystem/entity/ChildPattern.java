@@ -1,5 +1,7 @@
 package com.codeleven.patternsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 /**
@@ -7,8 +9,10 @@ import java.util.List;
  */
 public class ChildPattern {
     private int patternNo;                  // 子花样的序号
-    private ChildPattern prevChildPattern;  // 上一个子花样
-    private ChildPattern nextChildPattern;  // 下一个子花样
+    @JsonIgnore
+    private transient ChildPattern prevChildPattern;  // 上一个子花样
+    @JsonIgnore
+    private transient ChildPattern nextChildPattern;  // 下一个子花样
     private int beginFrameIndex;    // 包含当前这个index
     private int frameCount;         // 帧数 数量
     private List<UniFrame> frameList;

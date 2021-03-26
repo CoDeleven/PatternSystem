@@ -145,6 +145,19 @@ public class SystemTomFrameReadTest {
     }
 
     @Test
+    public void testChildPatternJavaCode4AndroidTest() throws IOException {
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/test.NPT");
+        SystemTopPatternParser parser = new SystemTopPatternParser(is);
+        UniPattern uniPattern = parser.readAll();
+        List<ChildPattern> childPatterns = uniPattern.getChildPatterns();
+
+        for (UniFrame uniFrame : childPatterns.get(5).getFrameList()) {
+            System.out.printf("result.add(new UniFrame(%d, %d, %d));\n", uniFrame.getX(), uniFrame.getY(), uniFrame.getControlCode());
+        }
+
+    }
+
+    @Test
     public void goTransform() throws IOException {
         SystemTopPatternParser parser = new SystemTopPatternParser(new FileInputStream("C:\\Users\\Administrator\\Desktop\\043-1.NPT"));
         UniPattern uniPattern = parser.readAll();
