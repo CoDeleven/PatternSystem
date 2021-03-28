@@ -3,7 +3,6 @@ package com.codeleven.patternsystem.output;
 import com.codeleven.patternsystem.entity.UniFrame;
 import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopStruct;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

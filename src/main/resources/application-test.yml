@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:mysql://192.168.1.219:3306/pattern_system_test?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  mapper-locations: classpath:com/codeleven/patternsystem/dao/sqlmap/*
+  type-handlers-package: com/codeleven/patternsystem/dao/typehandler
+  configuration:
+    map-underscore-to-camel-case: true
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+logging:
+  level:
+    com:
+      codeleven:
+        patternsystem:
+          dao: debug

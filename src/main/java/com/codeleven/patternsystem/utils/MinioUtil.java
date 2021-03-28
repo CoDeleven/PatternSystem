@@ -1,18 +1,17 @@
 package com.codeleven.patternsystem.utils;
 
-import com.codeleven.patternsystem.common.MinioConfig;
+import com.codeleven.patternsystem.config.MinioConfig;
 import io.minio.MinioClient;
 import io.minio.errors.*;
 import org.apache.http.entity.ContentType;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import static com.codeleven.patternsystem.common.MinioConfig.*;
+import static com.codeleven.patternsystem.config.MinioConfig.*;
 
 public class MinioUtil {
     private static MinioClient minioClient;

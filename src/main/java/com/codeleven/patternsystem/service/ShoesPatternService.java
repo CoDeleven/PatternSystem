@@ -1,8 +1,8 @@
 package com.codeleven.patternsystem.service;
 
 import cn.hutool.core.date.DateUtil;
-import com.codeleven.patternsystem.common.MinioConfig;
 import com.codeleven.patternsystem.common.ShoesSize;
+import com.codeleven.patternsystem.config.MinioConfig;
 import com.codeleven.patternsystem.dao.ShoesPatternMapper;
 import com.codeleven.patternsystem.dto.Page;
 import com.codeleven.patternsystem.dto.ShoesPatternDto;
@@ -12,50 +12,92 @@ import com.codeleven.patternsystem.output.NSPOutputHelper;
 import com.codeleven.patternsystem.parser.PatternSystemVendor;
 import com.codeleven.patternsystem.parser.dahao.DaHaoPatternParser;
 import com.codeleven.patternsystem.parser.systemtop.PatternTransformHelper;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopPatternParser;
-import com.codeleven.patternsystem.vo.ShoesPatternUpdateVO;
-import com.codeleven.patternsystem.vo.ShoesPatternVO;
+import com.codeleven.patternsystem.parser.UniParser;
+import com.codeleven.patternsystem.service.convert.PatternServiceConvert;
+import com.codeleven.patternsystem.vo.*;
 import io.minio.MinioClient;
-import io.minio.errors.*;
 import org.apache.http.entity.ContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.codeleven.patternsystem.common.MinioConfig.MINIO_ACCESS_KEY;
-import static com.codeleven.patternsystem.common.MinioConfig.MINIO_SECRET_KEY;
+import static com.codeleven.patternsystem.config.MinioConfig.MINIO_ACCESS_KEY;
+import static com.codeleven.patternsystem.config.MinioConfig.MINIO_SECRET_KEY;
 
 @Service
 public class ShoesPatternService extends BaseService<ShoesPatternDto> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShoesPatternService.class);
 
     @Autowired
     private ShoesPatternMapper shoesPatternMapper;
+    @Autowired
+    private PatternServiceConvert convert;
 
-    public Page<ShoesPatternDto> queryForPage(int page, int length, Map<String, Object> param) throws InvalidPortException, InvalidEndpointException, IOException, InvalidKeyException, NoSuchAlgorithmException, InsufficientDataException, InvalidArgumentException, InternalException, NoResponseException, InvalidBucketNameException, XmlPullParserException, ErrorResponseException, InvalidExpiresRangeException {
-        Page<ShoesPatternDto> shoesPatternDtoPage = super.queryForPage(page, length, () -> {
-            shoesPatternMapper.queryForPage(param);
-        });
-        for (ShoesPatternDto shoesPatternDto : shoesPatternDtoPage.getRoot()) {
-            // 获取数据文件
-            MinioClient minioClient = new MinioClient(MinioConfig.MINIO_DOMAIN, MINIO_ACCESS_KEY, MINIO_SECRET_KEY);
-            // 下载数据文件
-            String url = minioClient.presignedGetObject(MinioConfig.PATTERN_SYSTEM_BUCKET, shoesPatternDto.getCoverUrl(), 3600 * 24);
-            shoesPatternDto.setCoverUrl(url);
-        }
-        return shoesPatternDtoPage;
+    /**
+     * 查询列表
+     *
+     * @param page   页
+     * @param length 一页的数量
+     * @param param  查询的参数
+     * @return
+     */
+    public List<SectionListVO> queryForPage(int page, int length, Map<String, Object> param) {
+        // 查询花样
+        Page<ShoesPatternDto> shoesPatternDtoPage = super.queryForPage(page, length, () -> shoesPatternMapper.queryForPage(param));
+        List<ShoesPatternDto> patternDtoList = shoesPatternDtoPage.getRoot();
+        // 将 DTO列表 转换为 VO列表
+        List<PatternVO> patternVOList = convert.convertToPatternVOList(patternDtoList);
+        // 将 花样VO列表 进行分组
+        List<SectionListVO> sectionListVOS = convert.convertToPatternSectionList(patternVOList);
+        return sectionListVOS;
     }
 
-    public boolean create(ShoesPatternVO vo) {
+
+    public ShoesPatternDto detail(int patternId) {
+        // 根据花样ID查询花样
+        Map<String, Object> param = new HashMap<>();
+        param.put("pattern_id", patternId);
+        List<ShoesPatternDto> shoesPatternDtos = shoesPatternMapper.queryForPage(param);
+        if (shoesPatternDtos.size() == 0) {
+            LOGGER.debug("不存在花样ID为：{}", patternId);
+            return null;
+        }
+        ShoesPatternDto shoesPatternDto = shoesPatternDtos.get(0);
+
+        try {
+            MinioClient minioClient = new MinioClient(MinioConfig.MINIO_DOMAIN, MINIO_ACCESS_KEY, MINIO_SECRET_KEY);
+            // 下载数据文件
+            InputStream is = minioClient.getObject(MinioConfig.PATTERN_SYSTEM_BUCKET, shoesPatternDto.getPatternDataUrl());
+            UniPattern uniPattern = null;
+            if (shoesPatternDto.getVendor().getValue() == PatternSystemVendor.SYSTEM_TOP.getValue()) {
+                UniParser parser = new UniParser();
+                uniPattern = parser.doParse(is);
+            } else if (shoesPatternDto.getVendor().getValue() == PatternSystemVendor.DAHAO.getValue()) {
+                DaHaoPatternParser parser = new DaHaoPatternParser(is);
+                uniPattern = parser.readAll();
+            } else {
+                throw new RuntimeException("未知的厂商");
+            }
+
+            // 设置UniPattern
+            shoesPatternDto.setUniPattern(uniPattern);
+            return shoesPatternDto;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public boolean create(PatternCreateVO vo) {
         try {
             ShoesPatternDto dto = this.convertVO2DTO(vo);
             // 获取数据文件
@@ -65,15 +107,14 @@ public class ShoesPatternService extends BaseService<ShoesPatternDto> {
             UniPattern uniPattern = null;
             if (vo.getVendor() == PatternSystemVendor.SYSTEM_TOP.getValue()) {
                 // 解析花样文件
-                SystemTopPatternParser parser = new SystemTopPatternParser(is);
-                uniPattern = parser.readAll();
+                UniParser parser = new UniParser();
+                uniPattern = parser.doParse(is);
             } else if (vo.getVendor() == PatternSystemVendor.DAHAO.getValue()) {
                 DaHaoPatternParser parser = new DaHaoPatternParser(is);
                 uniPattern = parser.readAll();
             } else {
                 throw new RuntimeException("未知的厂商，请检查");
             }
-
 
             dto.setHeight(uniPattern.getHeight());
             dto.setWidth(uniPattern.getWidth());
@@ -90,7 +131,7 @@ public class ShoesPatternService extends BaseService<ShoesPatternDto> {
         return false;
     }
 
-    private ShoesPatternDto convertVO2DTO(ShoesPatternVO vo) {
+    private ShoesPatternDto convertVO2DTO(PatternCreateVO vo) {
         ShoesPatternDto dto = new ShoesPatternDto();
         dto.setName(vo.getName());
         dto.setShoesSize(ShoesSize.getShoesSize(vo.getSize()));
@@ -114,8 +155,8 @@ public class ShoesPatternService extends BaseService<ShoesPatternDto> {
             int val = shoesPatternDto.getVendor().getValue();
             // 解析花样文件
             if (val == PatternSystemVendor.SYSTEM_TOP.getValue()) {
-                SystemTopPatternParser parser = new SystemTopPatternParser(is);
-                uniPattern = parser.readAll();
+                UniParser parser = new UniParser();
+                uniPattern = parser.doParse(is);
             } else if (val == PatternSystemVendor.DAHAO.getValue()) {
                 DaHaoPatternParser parser = new DaHaoPatternParser(is);
                 uniPattern = parser.readAll();
@@ -140,36 +181,4 @@ public class ShoesPatternService extends BaseService<ShoesPatternDto> {
         }
     }
 
-    public ShoesPatternDto detail(int patternId) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("pattern_id", patternId);
-        List<ShoesPatternDto> shoesPatternDtos = shoesPatternMapper.queryForPage(param);
-        if (shoesPatternDtos.size() == 0) {
-            return null;
-        }
-
-        ShoesPatternDto shoesPatternDto = shoesPatternDtos.get(0);
-        try {
-            MinioClient minioClient = new MinioClient(MinioConfig.MINIO_DOMAIN, MINIO_ACCESS_KEY, MINIO_SECRET_KEY);
-            // 下载数据文件
-            InputStream is = minioClient.getObject(MinioConfig.PATTERN_SYSTEM_BUCKET, shoesPatternDto.getPatternDataUrl());
-            UniPattern uniPattern = null;
-            if(shoesPatternDto.getVendor().getValue() == PatternSystemVendor.SYSTEM_TOP.getValue()){
-                SystemTopPatternParser parser = new SystemTopPatternParser(is);
-                uniPattern = parser.readAll();
-            } else if(shoesPatternDto.getVendor().getValue() == PatternSystemVendor.DAHAO.getValue()) {
-                DaHaoPatternParser parser = new DaHaoPatternParser(is);
-                uniPattern = parser.readAll();
-            } else {
-                throw new RuntimeException("未知的厂商");
-            }
-
-            // 设置UniPattern
-            shoesPatternDto.setUniPattern(uniPattern);
-            return shoesPatternDto;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
 
-public class HttpResponse implements Serializable {
+public class HttpResponse<T> implements Serializable {
 
     /**
      * 序列号
@@ -24,9 +24,9 @@ public class HttpResponse implements Serializable {
     /**
      * 数据对象
      */
-    private Object data;
+    private T data;
 
-    public HttpResponse(String message, int errorCode, Object data) {
+    public HttpResponse(String message, int errorCode, T data) {
         this.message = message;
         this.errorCode = errorCode;
         this.data = data;
@@ -48,11 +48,11 @@ public class HttpResponse implements Serializable {
         this.errorCode = errorCode;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 }

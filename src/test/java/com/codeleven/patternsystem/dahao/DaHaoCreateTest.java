@@ -4,7 +4,7 @@ import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.output.NSPOutputHelper;
 import com.codeleven.patternsystem.output.PrettyFramesOutputStrategy;
 import com.codeleven.patternsystem.parser.dahao.DaHaoPatternParser;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopPatternParser;
+import com.codeleven.patternsystem.parser.UniParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -13,8 +13,8 @@ public class DaHaoCreateTest {
     @Test
     public void testDaHaoCreate() throws IOException {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/test.NPT");
-        SystemTopPatternParser parser = new SystemTopPatternParser(is);
-        UniPattern uniPattern = parser.readAll();
+        UniParser parser = new UniParser();
+        UniPattern uniPattern = parser.doParse(is);
 
         ByteArrayOutputStream output = NSPOutputHelper.output(uniPattern);
         FileOutputStream fos = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\DESIGN1.NSP");

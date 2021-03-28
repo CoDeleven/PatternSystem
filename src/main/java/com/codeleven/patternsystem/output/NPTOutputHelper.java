@@ -3,19 +3,17 @@ package com.codeleven.patternsystem.output;
 import com.codeleven.patternsystem.entity.UniFrame;
 import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopStruct;
+import com.codeleven.patternsystem.parser.systemtop.SystemTopFileStruct;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import static com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode.*;
 
 public class NPTOutputHelper {
     public static ByteArrayOutputStream output(UniPattern pattern) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byteArrayOutputStream.write(SystemTopStruct.FILE_START_CODE);
+        byteArrayOutputStream.write(SystemTopFileStruct.FILE_START_CODE);
         byteArrayOutputStream.write("NEW".getBytes());
         byteArrayOutputStream.write(new byte[9]);
 

@@ -14,10 +14,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode.CUT;
 import static com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode.SKIP;
-import static com.codeleven.patternsystem.parser.systemtop.SystemTopStruct.FILE_END_CODE;
-import static com.codeleven.patternsystem.parser.systemtop.SystemTopStruct.FIRST_FRAME_OFFSET;
+import static com.codeleven.patternsystem.parser.systemtop.SystemTopFileStruct.FRAME_END_CODE;
+import static com.codeleven.patternsystem.parser.systemtop.SystemTopFileStruct.FIRST_FRAME_OFFSET;
 
 public class DaHaoPatternParser implements IPatternParser {
     private final byte[] patternData;
@@ -136,7 +135,7 @@ public class DaHaoPatternParser implements IPatternParser {
             readBytes[3] = this.patternData[offset + 3];
             // 中间有个 00 不知道什么作用
             helper.addFrame(readBytes[0], computeNumber(readBytes[2]), computeNumber(readBytes[3]));
-            offset += FIRST_FRAME_OFFSET.getSize();
+            offset += FIRST_FRAME_OFFSET.size;
         } while (!isEndOfFile(readBytes));
         return helper.build();
     }
@@ -160,7 +159,7 @@ public class DaHaoPatternParser implements IPatternParser {
 
     @Override
     public boolean isEndOfFile(byte[] byteArray) {
-        return Arrays.equals(FILE_END_CODE, byteArray);
+        return Arrays.equals(FRAME_END_CODE, byteArray);
     }
 
     private int getUnsignedShortByBytes(byte byte1, byte byte2) {
