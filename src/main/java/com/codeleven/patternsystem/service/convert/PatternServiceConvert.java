@@ -1,20 +1,17 @@
 package com.codeleven.patternsystem.service.convert;
 
 import cn.hutool.core.date.DateUtil;
+import com.codeleven.patternsystem.common.ShoesSize;
 import com.codeleven.patternsystem.config.MinioConfig;
-import com.codeleven.patternsystem.dto.ShoesPatternDto;
-import com.codeleven.patternsystem.vo.PatternDetailVO;
-import com.codeleven.patternsystem.vo.PatternVO;
-import com.codeleven.patternsystem.vo.SectionListVO;
-import com.codeleven.patternsystem.vo.ShoesPatternVO;
+import com.codeleven.patternsystem.dto.PatternDto;
+import com.codeleven.patternsystem.parser.PatternSystemVendor;
+import com.codeleven.patternsystem.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -56,10 +53,10 @@ public class PatternServiceConvert {
      * @param patternDto 花样DTO
      * @return 返回 花样VO 列表
      */
-    public List<PatternVO> convertToPatternVOList(List<ShoesPatternDto> patternDto) {
-        return patternDto.stream().map(new Function<ShoesPatternDto, PatternVO>() {
+    public List<PatternVO> convertToPatternVOList(List<PatternDto> patternDto) {
+        return patternDto.stream().map(new Function<PatternDto, PatternVO>() {
             @Override
-            public PatternVO apply(ShoesPatternDto patternDto) {
+            public PatternVO apply(PatternDto patternDto) {
                 return PatternServiceConvert.this.convertToPatternVO(patternDto);
             }
         }).collect(Collectors.toList());
@@ -70,21 +67,34 @@ public class PatternServiceConvert {
      * @param patternDto 花样DTO
      * @return 返回 PatternVO
      */
-    public PatternVO convertToPatternVO(ShoesPatternDto patternDto) {
+    public PatternVO convertToPatternVO(PatternDto patternDto) {
         PatternVO patternVO = new PatternVO();
         // 花样的名称
         patternVO.setName(patternDto.getName());
         // 花样的尺寸大小
         patternVO.setSize(patternDto.getShoesSize().getSizeDesc());
         // 获取封面URL
-        String coverUrl = minioConfig.getObjectUrl(patternDto.getCoverUrl());
+        String coverUrl = minioConfig.getObjectUrl(patternDto.getCoverPath4Minio());
         // 获取花样数据
-        String patternUrl = minioConfig.getObjectUrl(patternDto.getPatternDataUrl());
+        String patternUrl = minioConfig.getObjectUrl(patternDto.getPatternPath4Minio());
         // 获取花样的创建日期
         String formatCreateDate = DateUtil.format(patternDto.getCreateTime(), "yyyy-MM-dd");
         patternVO.setCreateDate(formatCreateDate);
         patternVO.setCoverUrl(coverUrl);
         patternVO.setPatternUrl(patternUrl);
         return patternVO;
+    }
+
+    public PatternDto convertToPatternDTO(PatternCreateVO vo){
+        PatternDto dto = new PatternDto();
+        dto.setName(vo.getName());
+        dto.setShoesSize(ShoesSize.getShoesSize(vo.getSize()));
+        // 设置花样数据文件的路径
+        dto.setPatternPath4Minio(vo.getPatternDataPath());
+        // 设置服务商
+        dto.setVendor(PatternSystemVendor.getVendor(vo.getVendor()));
+        // 上传到 对象存储服务 后获取到的封面URL
+        dto.setCoverPath4Minio(vo.getCoverPath());
+        return dto;
     }
 }

@@ -10,7 +10,7 @@ import java.util.Date;
  * 鞋子花样DTO
  * @author CoDeleven
  */
-public class ShoesPatternDto {
+public class PatternDto {
     private long id;
     private PatternSystemVendor vendor;
     private int width;          // 单位 毫米
@@ -20,8 +20,8 @@ public class ShoesPatternDto {
     private ShoesSize shoesSize;// 花样对应的鞋子尺码
     private String name;        // 标识花样
     private SimpleUser user;    // 用户
-    private String coverUrl;       // 封面
-    private String patternDataUrl;  // 花样数据Url（来自文件对象服务）
+    private String coverPath4Minio;       // 封面
+    private String patternPath4Minio;  // 花样数据Url（来自文件对象服务）
     private UniPattern uniPattern;
 
     public UniPattern getUniPattern() {
@@ -32,12 +32,12 @@ public class ShoesPatternDto {
         this.uniPattern = uniPattern;
     }
 
-    public String getPatternDataUrl() {
-        return patternDataUrl;
+    public String getPatternPath4Minio() {
+        return patternPath4Minio;
     }
 
-    public void setPatternDataUrl(String patternDataUrl) {
-        this.patternDataUrl = patternDataUrl;
+    public void setPatternPath4Minio(String patternPath4Minio) {
+        this.patternPath4Minio = patternPath4Minio;
     }
 
     public long getId() {
@@ -112,11 +112,11 @@ public class ShoesPatternDto {
         this.user = user;
     }
 
-    public String getCoverUrl() {
-        return coverUrl;
+    public String getCoverPath4Minio() {
+        return coverPath4Minio;
     }
 
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
+    public void setCoverPath4Minio(String coverPath4Minio) {
+        this.coverPath4Minio = coverPath4Minio;
     }
 }

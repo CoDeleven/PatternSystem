@@ -4,11 +4,10 @@ import cn.hutool.core.lang.TypeReference;
 import cn.hutool.json.JSONUtil;
 import com.codeleven.patternsystem.common.HttpResponse;
 import com.codeleven.patternsystem.common.ShoesSize;
-import com.codeleven.patternsystem.dto.ShoesPatternDto;
+import com.codeleven.patternsystem.dto.PatternDto;
 import com.codeleven.patternsystem.parser.PatternSystemVendor;
 import com.codeleven.patternsystem.vo.PatternCreateVO;
 import com.codeleven.patternsystem.vo.SectionListVO;
-import com.google.common.reflect.TypeToken;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -21,8 +20,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.lang.reflect.Type;
@@ -51,7 +48,8 @@ public class PatternControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200))
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-        Type type = new TypeReference<HttpResponse<List<SectionListVO>>>() {}.getType();
+        Type type = new TypeReference<HttpResponse<List<SectionListVO>>>() {
+        }.getType();
         HttpResponse<List<SectionListVO>> response = JSONUtil.toBean(contentAsString, type, false);
 
         Assertions.assertEquals(0, response.getErrorCode());
@@ -71,14 +69,15 @@ public class PatternControllerTest {
 
         String contentAsString = mockMvc.perform(
                 MockMvcRequestBuilders.post("/pattern/create").contentType(MediaType.APPLICATION_JSON)
-                .content(contentJson))
+                        .content(contentJson))
                 .andExpect(status().is(200))
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-        Type type = new TypeReference<HttpResponse<Object>>() {}.getType();
-        HttpResponse<Object> response = JSONUtil.toBean(contentAsString, type, false);
+        Type type = new TypeReference<HttpResponse<Boolean>>() {
+        }.getType();
+        HttpResponse<Boolean> response = JSONUtil.toBean(contentAsString, type, false);
 
-        Assertions.assertNull(response.getData());
+        Assertions.assertTrue(response.getData());
         Assertions.assertEquals(0, response.getErrorCode());
     }
 
@@ -88,8 +87,9 @@ public class PatternControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200))
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-        Type type = new TypeReference<HttpResponse<ShoesPatternDto>>() {}.getType();
-        HttpResponse<ShoesPatternDto> response = JSONUtil.toBean(contentAsString, type, false);
+        Type type = new TypeReference<HttpResponse<PatternDto>>() {
+        }.getType();
+        HttpResponse<PatternDto> response = JSONUtil.toBean(contentAsString, type, false);
 
         Assertions.assertEquals(0, response.getErrorCode());
         Assertions.assertEquals(8, response.getData().getId());

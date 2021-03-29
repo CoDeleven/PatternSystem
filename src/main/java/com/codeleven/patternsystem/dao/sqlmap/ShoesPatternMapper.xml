@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.codeleven.patternsystem.dao.ShoesPatternMapper">
-    <select id="queryForPage" resultType="com.codeleven.patternsystem.dto.ShoesPatternDto" parameterType="Map">
+    <select id="queryForPage" resultType="com.codeleven.patternsystem.dto.PatternDto" parameterType="Map">
         SELECT id, vendor, width, height, shoes_size, name, user_id, cover_url, pattern_data_url, create_time, update_time
         FROM ps_shoes_pattern
         <if test="pattern_id != null and pattern_id != 0">
@@ -12,11 +12,11 @@
         </if>
     </select>
 
-    <select id="findPatternById" resultType="com.codeleven.patternsystem.dto.ShoesPatternDto">
+    <select id="findPatternById" resultType="com.codeleven.patternsystem.dto.PatternDto">
         SELECT * FROM ps_shoes_pattern WHERE id=#{id};
     </select>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.codeleven.patternsystem.dto.ShoesPatternDto">
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.codeleven.patternsystem.dto.PatternDto">
         INSERT INTO
             ps_shoes_pattern(`vendor`, `width`, `height`, `shoes_size`,
                                             <if test='name != null and name != ""'>`name`,</if>

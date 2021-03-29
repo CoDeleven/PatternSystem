@@ -1,6 +1,6 @@
 package com.codeleven.patternsystem.dao;
 
-import com.codeleven.patternsystem.dto.ShoesPatternDto;
+import com.codeleven.patternsystem.dto.PatternDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -14,21 +14,21 @@ public interface ShoesPatternMapper {
      * @param pageParam 分页参数
      * @return List<ShoesPatternDto> 花样列表
      */
-    List<ShoesPatternDto> queryForPage(Map<String, Object> pageParam);
+    List<PatternDto> queryForPage(Map<String, Object> pageParam);
 
     /**
      * 创建鞋子花样记录
      * @param patternDto 记录实体
      * @return 创建成功条数
      */
-    int create(ShoesPatternDto patternDto);
+    int create(PatternDto patternDto);
 
     /**
      * 更新鞋子花样记录
      * @param patternDto 记录实体
      * @return 更新成功条数
      */
-    int update(ShoesPatternDto patternDto);
+    int update(PatternDto patternDto);
 
-    ShoesPatternDto findPatternById(@Param("id") int id);
+    PatternDto findPatternById(@Param("id") int id);
 }

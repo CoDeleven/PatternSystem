@@ -1,7 +1,7 @@
 package com.codeleven.patternsystem.controller;
 
 import com.codeleven.patternsystem.common.HttpResponse;
-import com.codeleven.patternsystem.dto.ShoesPatternDto;
+import com.codeleven.patternsystem.dto.PatternDto;
 import com.codeleven.patternsystem.service.ShoesPatternService;
 import com.codeleven.patternsystem.utils.MinioUtil;
 import com.codeleven.patternsystem.vo.PatternCreateVO;
@@ -35,14 +35,14 @@ public class ShoesPatternController {
     }
 
     @PostMapping("/pattern/create")
-    public HttpResponse<Object> create(@RequestBody PatternCreateVO vo) {
+    public HttpResponse<Boolean> create(@RequestBody PatternCreateVO vo) {
         boolean success = shoesPatternService.create(vo);
-        return new HttpResponse<>("ok", 0, null);
+        return new HttpResponse<>("ok", 0, success);
     }
 
     @GetMapping("/pattern/detail/{id}")
-    public HttpResponse<ShoesPatternDto> detail(@PathVariable("id") int patternId) {
-        ShoesPatternDto detail = shoesPatternService.detail(patternId);
+    public HttpResponse<PatternDto> detail(@PathVariable("id") int patternId) {
+        PatternDto detail = shoesPatternService.detail(patternId);
         return new HttpResponse<>("ok", 0, detail);
     }
 
