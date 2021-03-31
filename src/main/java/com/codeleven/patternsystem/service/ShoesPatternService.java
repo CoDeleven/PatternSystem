@@ -12,11 +12,9 @@ import com.codeleven.patternsystem.parser.PatternSystemVendor;
 import com.codeleven.patternsystem.parser.UniParser;
 import com.codeleven.patternsystem.parser.dahao.DaHaoPatternParser;
 import com.codeleven.patternsystem.parser.systemtop.PatternTransformHelper;
+import com.codeleven.patternsystem.parser.transform.ITransformCommand;
 import com.codeleven.patternsystem.service.convert.PatternServiceConvert;
-import com.codeleven.patternsystem.vo.PatternCreateVO;
-import com.codeleven.patternsystem.vo.PatternVO;
-import com.codeleven.patternsystem.vo.SectionListVO;
-import com.codeleven.patternsystem.vo.ShoesPatternUpdateVO;
+import com.codeleven.patternsystem.vo.*;
 import io.minio.MinioClient;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
@@ -113,28 +111,26 @@ public class ShoesPatternService extends BaseService<PatternDto> {
         return false;
     }
 
+    /**
+     * 更新
+     * @param vo
+     */
     public void update(ShoesPatternUpdateVO vo) {
         PatternDto patternDto = this.shoesPatternMapper.findPatternById(vo.getShoesPatternId());
         String patternDataUrl = patternDto.getPatternPath4Minio();
+        InputStream is = config.getObjectInputStream(patternDataUrl);
+        UniParser parser = new UniParser();
+        UniPattern uniPattern = parser.doParse(is);
+
+
+        PatternTransformHelper helper = new PatternTransformHelper(uniPattern);
+        for (CommandVO commandVO : vo.getPatternUpdateOperationList()) {
+            ITransformCommand iTransformCommand = helper.genCommand(commandVO);
+            iTransformCommand.execute();
+        }
+        // TODO 将更新的东西保存起来
+        /*parser.getOutput();
         try {
-            MinioClient minioClient = new MinioClient(MinioConfig.MINIO_DOMAIN, MINIO_ACCESS_KEY, MINIO_SECRET_KEY);
-            // 下载数据文件
-            InputStream is = minioClient.getObject(MinioConfig.PATTERN_SYSTEM_BUCKET, patternDataUrl);
-            UniPattern uniPattern = null;
-            int val = patternDto.getVendor().getValue();
-            // 解析花样文件
-            if (val == PatternSystemVendor.SYSTEM_TOP.getValue()) {
-                UniParser parser = new UniParser();
-                uniPattern = parser.doParse(is);
-            } else if (val == PatternSystemVendor.DAHAO.getValue()) {
-                DaHaoPatternParser parser = new DaHaoPatternParser(is);
-                uniPattern = parser.readAll();
-            }
-
-            PatternTransformHelper helper = new PatternTransformHelper(uniPattern, vo.getPatternUpdateOperationList());
-            helper.setTargetPatternNo(vo.getChildPatternNo());
-            helper.doTransform();
-
             ByteArrayOutputStream output;
             if (val == PatternSystemVendor.SYSTEM_TOP.getValue()) {
                 output = NPTOutputHelper.output(uniPattern);
@@ -147,7 +143,7 @@ public class ShoesPatternService extends BaseService<PatternDto> {
             minioClient.putObject(MinioConfig.PATTERN_SYSTEM_BUCKET, patternDataUrl, new ByteArrayInputStream(output.toByteArray()), ContentType.DEFAULT_BINARY.getMimeType());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 }

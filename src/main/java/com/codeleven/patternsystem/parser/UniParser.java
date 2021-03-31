@@ -16,15 +16,18 @@ public class UniParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(UniParser.class);
     private static final IParserStrategy[] PARSER_LIST = new IParserStrategy[]{new SystemTopParserStrategy()};
 
+    public UniPattern doParse(InputStream is) {
+        byte[] totalFileBytes = IoUtil.readBytes(is);
+        return this.doParse(totalFileBytes);
+    }
+
     /**
      * 解析
-     * @param is 输入流数据
+     * @param totalFileBytes 输入流字节
      * @return 返回UniPattern
      */
-    public UniPattern doParse(InputStream is) {
+    public UniPattern doParse(byte[] totalFileBytes) {
         UniPattern result = new UniPattern();
-
-        byte[] totalFileBytes = IoUtil.readBytes(is);
 
         // 1. 首先判断当前应该使用何种解析器
         IParserStrategy targetParserStrategy = this.getTargetParserStrategy(totalFileBytes);

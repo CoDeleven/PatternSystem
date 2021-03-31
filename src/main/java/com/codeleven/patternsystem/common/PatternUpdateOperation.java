@@ -3,6 +3,7 @@ package com.codeleven.patternsystem.common;
 public class PatternUpdateOperation {
     private String operationCode;
     private Integer num;
+    private int childPatternNo; // 从1开始，0表示为空
 
     public String getOperationCode() {
         return operationCode;
@@ -18,5 +19,13 @@ public class PatternUpdateOperation {
 
     public void setNum(Integer num) {
         this.num = num;
+    }
+
+    public int getChildPatternNo() {
+        return childPatternNo;
+    }
+
+    public void setChildPatternNo(int childPatternNo) {
+        this.childPatternNo = childPatternNo;
     }
 }
