@@ -1,15 +1,12 @@
-package com.codeleven.patternsystem.entity;
+package com.codeleven.patternsystem.dto;
 
-import com.codeleven.patternsystem.dto.SimpleUser;
-import com.codeleven.patternsystem.dto.UniPoint;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Data
-public class UniPattern {
+public class UniPatternPO {
     private long id;
     private int width;                  // 单位 毫米
     private int height;                 // 单位 毫米
@@ -21,7 +18,7 @@ public class UniPattern {
     private UniPoint refOrigin;
     private String coverPath;                       // 封面路径（来自文件对象服务）
     private String dxfPath;                         // DXF花样数据路径（来自文件对象服务）
-    private Map<Long, UniChildPattern> childList;     // 子花样
+    private List<PatternChildPO> childDtoList;     // 子花样
     private int offsetX;
     private int offsetY;
 }

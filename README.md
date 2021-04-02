@@ -1,4 +1,6 @@
 
+# 流程
+![处理流程](http://assets.processon.com/chart_image/605d65511e0853028aaa32ac.png)
 
 # 上亿花样系统
 

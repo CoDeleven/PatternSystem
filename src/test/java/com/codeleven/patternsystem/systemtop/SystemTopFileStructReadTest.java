@@ -18,59 +18,59 @@ import java.util.List;
  * 上亿花样 结构读取测试
  */
 public class SystemTopFileStructReadTest {
-    @Test
-    public void readMinXTest() {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
-        UniParser parser = new UniParser();
-        UniPattern uniPattern = parser.doParse(is);
+//    @Test
+//    public void readMinXTest() {
+//        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
+//        UniParser parser = new UniParser();
+//        UniPattern uniPattern = parser.doParse(is);
+//
+//        int dimension = uniPattern.getMinX();
+//        short data = (short) 0xFB31;
+//        assert dimension == data;
+//    }
 
-        int dimension = uniPattern.getMinX();
-        short data = (short) 0xFB31;
-        assert dimension == data;
-    }
+//    @Test
+//    public void readMaxXTest() {
+//        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
+//        UniParser parser = new UniParser();
+//        UniPattern uniPattern = parser.doParse(is);
+//
+//        int dimension = uniPattern.getMaxX();
+//        short data = (short) 0x04D4;
+//        assert dimension == data;
+//    }
 
-    @Test
-    public void readMaxXTest() {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
-        UniParser parser = new UniParser();
-        UniPattern uniPattern = parser.doParse(is);
+//    @Test
+//    public void readMaxYTest() throws IOException {
+//        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
+//        UniParser parser = new UniParser();
+//        UniPattern uniPattern = parser.doParse(is);
+//
+//        int dimension = uniPattern.getMaxY();
+//        short data = (short) 0x039E;
+//        assert dimension == data;
+//    }
 
-        int dimension = uniPattern.getMaxX();
-        short data = (short) 0x04D4;
-        assert dimension == data;
-    }
+//    @Test
+//    public void readMinYTest() throws IOException {
+//        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
+//        UniParser parser = new UniParser();
+//        UniPattern uniPattern = parser.doParse(is);
+//        int dimension = uniPattern.getMinY();
+//
+//        short data = (short) 0x0;
+//        assert dimension == data;
+//    }
 
-    @Test
-    public void readMaxYTest() throws IOException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
-        UniParser parser = new UniParser();
-        UniPattern uniPattern = parser.doParse(is);
-
-        int dimension = uniPattern.getMaxY();
-        short data = (short) 0x039E;
-        assert dimension == data;
-    }
-
-    @Test
-    public void readMinYTest() throws IOException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
-        UniParser parser = new UniParser();
-        UniPattern uniPattern = parser.doParse(is);
-        int dimension = uniPattern.getMinY();
-
-        short data = (short) 0x0;
-        assert dimension == data;
-    }
-
-    @Test
-    public void readPatternTotalFile() throws IOException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
-        UniParser parser = new UniParser();
-        UniPattern uniPattern = parser.doParse(is);
-
-        assert uniPattern.getFrames() != null;
-        assert uniPattern.getFrames().size() > 0;
-    }
+//    @Test
+//    public void readPatternTotalFile() throws IOException {
+//        InputStream is = this.getClass().getClassLoader().getResourceAsStream("systemtop/002.NPT");
+//        UniParser parser = new UniParser();
+//        UniPattern uniPattern = parser.doParse(is);
+//
+//        assert uniPattern.getFrames() != null;
+//        assert uniPattern.getFrames().size() > 0;
+//    }
 
     /**
      * 测试帧数据的读取

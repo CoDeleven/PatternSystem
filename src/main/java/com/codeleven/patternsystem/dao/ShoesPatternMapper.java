@@ -1,6 +1,8 @@
 package com.codeleven.patternsystem.dao;
 
+import com.codeleven.patternsystem.dto.PatternChildPO;
 import com.codeleven.patternsystem.dto.PatternDto;
+import com.codeleven.patternsystem.dto.UniPatternPO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -14,21 +16,40 @@ public interface ShoesPatternMapper {
      * @param pageParam 分页参数
      * @return List<ShoesPatternDto> 花样列表
      */
-    List<PatternDto> queryForPage(Map<String, Object> pageParam);
+    List<UniPatternPO> queryForPage(Map<String, Object> pageParam);
 
     /**
      * 创建鞋子花样记录
      * @param patternDto 记录实体
      * @return 创建成功条数
      */
-    int create(PatternDto patternDto);
+    int create(UniPatternPO patternDto);
 
     /**
      * 更新鞋子花样记录
      * @param patternDto 记录实体
      * @return 更新成功条数
      */
-    int update(PatternDto patternDto);
+    int update(UniPatternPO patternDto);
 
-    PatternDto findPatternById(@Param("id") int id);
+    /**
+     * 更新鞋子花样记录
+     * @param childPOList
+     * @return
+     */
+    int updateBatch(List<PatternChildPO> childPOList);
+
+    /**
+     * 查找花样详情
+     * @param id
+     * @return 花样详情
+     */
+    UniPatternPO findPatternById(@Param("id") int id);
+
+    /**
+     * 创建子花样
+     * @param childDto 子花样DTO
+     * @return 返回创建结果
+     */
+    int createChild(List<PatternChildPO> childPOList);
 }

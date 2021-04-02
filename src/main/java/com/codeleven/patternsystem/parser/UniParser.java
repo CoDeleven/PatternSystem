@@ -46,21 +46,21 @@ public class UniParser {
         List<ChildPattern> childFrames = targetParserStrategy.splitPattern(uniFrames);
 
         // 设置花样数据
-        result.setPatternName("NEW");
+//        result.setPatternName("NEW");
         // 设置针迹
-        result.setFrames(uniFrames);
+//        result.setFrames(uniFrames);
         // 设置针数
-        result.setFrameNumber(uniFrames.size());
+//        result.setFrameNumber(uniFrames.size());
         // 左
-        result.setMinX(dimension[0]);
+//        result.setMinX(dimension[0]);
         // 上
-        result.setMaxY(dimension[1]);
+//        result.setMaxY(dimension[1]);
         // 右
-        result.setMaxX(dimension[2]);
+//        result.setMaxX(dimension[2]);
         // 下
-        result.setMinY(dimension[3]);
+//        result.setMinY(dimension[3]);
         // 子花样
-        result.setChildPatterns(childFrames);
+//        result.setChildPatterns(childFrames);
 
         return result;
     }

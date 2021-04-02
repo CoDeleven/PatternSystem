@@ -1,11 +1,28 @@
 package com.codeleven.patternsystem.parser.systemtop;
 
+import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.util.ArrayUtil;
 import com.codeleven.patternsystem.entity.ChildPattern;
+import com.codeleven.patternsystem.entity.UniChildPattern;
+import com.codeleven.patternsystem.entity.UniFrame;
 import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.parser.transform.*;
+import com.codeleven.patternsystem.service.ShoesPatternService;
 import com.codeleven.patternsystem.vo.CommandVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PatternTransformHelper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PatternTransformHelper.class);
+
     private final UniPattern pattern;
 
     public PatternTransformHelper(UniPattern pattern) {
@@ -37,17 +54,25 @@ public class PatternTransformHelper {
      */
     public ITransformCommand genCommand(CommandVO commandVO) {
         // 获取 commandVO 内的 childPatternNo
-        int childPatternNo = commandVO.getChildPatternNo();
+        long childPatternNo = commandVO.getChildPatternNo();
         // 如果 childPatternNo 不为 0
         if (childPatternNo != 0) {
             // 获取 childPatternNo 对应的 子花样的 针迹列表
-            ChildPattern childPattern = pattern.getChildPatterns().get(childPatternNo - 1);
+            UniChildPattern childPattern = pattern.getChildList().get(childPatternNo);
+            if(childPattern == null){
+                LOGGER.error("ID为：{} 的子花样不存在", childPatternNo);
+                throw new RuntimeException("ID为" + childPatternNo + "的子花样不存在");
+            }
             // 构建Receiver
-            TransformReceiver receiver = TransformReceiver.getInstance(childPattern.getFrameList(), true);
+            TransformReceiver receiver = TransformReceiver.getInstance(childPattern.getPatternData(), true);
             // 获取Command
             return getCommand(receiver, commandVO.getOperation(), commandVO.getParam());
         } else {
-            TransformReceiver receiver = TransformReceiver.getInstance(pattern.getFrames(), false);
+            Map<Long, UniChildPattern> childList = pattern.getChildList();
+            List<UniFrame> totalFrames = childList.values().stream()
+                    .flatMap((Function<UniChildPattern, Stream<UniFrame>>) uniChildPattern -> uniChildPattern.getPatternData().stream()).collect(Collectors.toList());
+
+            TransformReceiver receiver = TransformReceiver.getInstance(totalFrames, false);
             return getCommand(receiver, commandVO.getOperation(), commandVO.getParam());
         }
     }

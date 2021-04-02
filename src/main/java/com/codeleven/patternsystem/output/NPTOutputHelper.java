@@ -1,5 +1,6 @@
 package com.codeleven.patternsystem.output;
 
+import com.codeleven.patternsystem.entity.UniChildPattern;
 import com.codeleven.patternsystem.entity.UniFrame;
 import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
@@ -7,6 +8,8 @@ import com.codeleven.patternsystem.parser.systemtop.SystemTopFileStruct;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 import static com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode.*;
 
@@ -20,20 +23,44 @@ public class NPTOutputHelper {
         UniFrame lastFrame = UniFrame.ZERO_FRAME;
         // 针数组
         ByteArrayOutputStream frameByteArray = new ByteArrayOutputStream();
-        for (UniFrame frame : pattern.getFrames()) {
-            byte[] bytes = convertUniFrame(lastFrame, frame);
-            frameByteArray.write(bytes);
-            lastFrame = frame;
+        Collection<UniChildPattern> childPatterns = pattern.getChildList().values();
+
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+
+        for (UniChildPattern childPattern : childPatterns) {
+            List<UniFrame> patternData = childPattern.getPatternData();
+            for (UniFrame frame : patternData) {
+                byte[] bytes = convertUniFrame(lastFrame, frame);
+                frameByteArray.write(bytes);
+                lastFrame = frame;
+
+                int uniFrameX = frame.getX();
+                int uniFrameY = frame.getY();
+
+                if(uniFrameX > maxX) {
+                    maxX = uniFrameX;
+                } else if(uniFrameX < minX) {
+                    minX = uniFrameX;
+                }
+                if(uniFrameY > maxY){
+                    maxY = uniFrameY;
+                } else if(uniFrameY < minY){
+                    minY = uniFrameY;
+                }
+            }
         }
 
         // 写入针的总字节数
         byteArrayOutputStream.write(convertInt2NPTStructByte(frameByteArray.size() * 4, 4));
         byteArrayOutputStream.write(convertInt2NPTStructByte(frameByteArray.size(), 2));
         byteArrayOutputStream.write(convertInt2NPTStructByte(frameByteArray.size() - 10, 2));
-        byteArrayOutputStream.write(convertInt2NPTStructByte(pattern.getMinX(), 2));
-        byteArrayOutputStream.write(convertInt2NPTStructByte(pattern.getMaxX(), 2));
-        byteArrayOutputStream.write(convertInt2NPTStructByte(pattern.getMinY(), 2));
-        byteArrayOutputStream.write(convertInt2NPTStructByte(pattern.getMaxY(), 2));
+        byteArrayOutputStream.write(convertInt2NPTStructByte(minX, 2));
+        byteArrayOutputStream.write(convertInt2NPTStructByte(maxX, 2));
+        byteArrayOutputStream.write(convertInt2NPTStructByte(minY, 2));
+        byteArrayOutputStream.write(convertInt2NPTStructByte(maxY, 2));
         byteArrayOutputStream.write(new byte[12]);
 
         byteArrayOutputStream.write(frameByteArray.toByteArray());

@@ -5,7 +5,7 @@ import com.codeleven.patternsystem.parser.transform.TransformReceiver;
 public class CommandVO {
     private final TransformReceiver.Operation operation;
     private final int[] param;
-    private final int childPatternNo;
+    private final long childPatternNo;
 
     public CommandVO(TransformReceiver.Operation operation, int childPatternNo, int... param) {
         this.operation = operation;
@@ -21,7 +21,7 @@ public class CommandVO {
         return param;
     }
 
-    public int getChildPatternNo() {
+    public long getChildPatternNo() {
         return childPatternNo;
     }
 }

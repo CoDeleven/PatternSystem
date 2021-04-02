@@ -40,14 +40,14 @@ public class DaHaoPatternParser implements IPatternParser {
         int[] dimension = this.getDimension(frames);
         List<ChildPattern> patterns = this.splitPatternForChild(frames);
 
-        pattern.setFrames(frames);
-        pattern.setMinX(dimension[0]);
-        pattern.setMaxY(dimension[1]);
-        pattern.setMaxX(dimension[2]);
-        pattern.setMinY(dimension[3]);
+//        pattern.setFrames(frames);
+//        pattern.setMinX(dimension[0]);
+//        pattern.setMaxY(dimension[1]);
+//        pattern.setMaxX(dimension[2]);
+//        pattern.setMinY(dimension[3]);
 
-        pattern.setFrameNumber(frames.size());
-        pattern.setChildPatterns(patterns);
+//        pattern.setFrameNumber(frames.size());
+//        pattern.setChildPatterns(patterns);
 
         return pattern;
     }
