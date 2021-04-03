@@ -6,6 +6,7 @@
     <modules>
         <module>pattern-parser</module>
         <module>pattern-common</module>
+        <module>pattern-core</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

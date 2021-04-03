@@ -1,11 +1,13 @@
-package com.codeleven.patternsystem.utils;
+package com.codeleven.parser.utils;
 
 import com.aspose.cad.fileformats.cad.cadobjects.Cad2DPoint;
 import com.aspose.cad.fileformats.cad.cadobjects.CadLwPolyline;
 import com.aspose.cad.fileformats.cad.cadobjects.ICadBaseEntity;
+import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
 import com.codeleven.parser.shangyi.SystemTopControlCode;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,6 +57,14 @@ public class PatternUtil {
 //        pattern.setFrameNumber(frameCount);
 //    }
 //
+    public static List<UniFrame> mergeChildPattern(List<UniChildPattern> childPatterns){
+        List<UniFrame> totalFrames = new ArrayList<>();
+        for (UniChildPattern childPattern : childPatterns) {
+            totalFrames.addAll(childPattern.getPatternData());
+        }
+        return totalFrames;
+    }
+
     public static List<UniFrame> convertChildPattern(ICadBaseEntity entity) {
         List<UniFrame> frames = new LinkedList<>();
         boolean isFirst = true;

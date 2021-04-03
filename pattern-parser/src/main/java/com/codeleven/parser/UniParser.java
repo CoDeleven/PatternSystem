@@ -1,20 +1,32 @@
 package com.codeleven.parser;
 
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.RandomUtil;
+import com.aspose.cad.fileformats.cad.DxfImage;
 import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
 import com.codeleven.common.entity.UniPattern;
+import com.codeleven.parser.dahao.DaHaoPatternParser;
+import com.codeleven.parser.dxf.DXFParserStrategy;
 import com.codeleven.parser.shangyi.SystemTopParserStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UniParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(UniParser.class);
-    private static final IParserStrategy[] PARSER_LIST = new IParserStrategy[]{new SystemTopParserStrategy()};
+    private static final IParserStrategy[] PARSER_LIST = new IParserStrategy[]{new SystemTopParserStrategy(), new DXFParserStrategy(), new DaHaoPatternParser()};
+    private IParserStrategy targetParserStrategy;
+
+    public IParserStrategy getTargetParserStrategy() {
+        return targetParserStrategy;
+    }
 
     public UniPattern doParse(InputStream is) {
         byte[] totalFileBytes = IoUtil.readBytes(is);
@@ -30,37 +42,28 @@ public class UniParser {
         UniPattern result = new UniPattern();
 
         // 1. 首先判断当前应该使用何种解析器
-        IParserStrategy targetParserStrategy = this.getTargetParserStrategy(totalFileBytes);
+        targetParserStrategy = this.getTargetParserStrategy(totalFileBytes);
         if(targetParserStrategy == null){
             throw new RuntimeException("读取输入流失败，没有匹配的文件解析器...");
         }
-        // 2. 获取 针迹开始偏移位置
-        int frameOffset = targetParserStrategy.getFrameStartOffset(totalFileBytes);
-        // 3. 获取 针迹字节数量
-        int frameUsedBytes = targetParserStrategy.getAvailableBytesWithBytes(totalFileBytes);
-        // 4. 执行读取针迹数
-        List<UniFrame> uniFrames = targetParserStrategy.readFrames(totalFileBytes, frameOffset);
-        // 5. 获取图形宽高、最大最小值
+        // 2. 执行读取针迹数
+        List<UniFrame> uniFrames = targetParserStrategy.readFrames(totalFileBytes);
+        // 3. 获取图形宽高、最大最小值
         int[] dimension = getDimension(uniFrames);
-        // 6. 切分花样
+        // 4. 切分花样
         List<UniChildPattern> childFrames = targetParserStrategy.splitPattern(uniFrames);
-
-        // 设置花样数据
-//        result.setPatternName("NEW");
-        // 设置针迹
-//        result.setFrames(uniFrames);
-        // 设置针数
-//        result.setFrameNumber(uniFrames.size());
-        // 左
-//        result.setMinX(dimension[0]);
-        // 上
-//        result.setMaxY(dimension[1]);
-        // 右
-//        result.setMaxX(dimension[2]);
-        // 下
-//        result.setMinY(dimension[3]);
-        // 子花样
-//        result.setChildPatterns(childFrames);
+        // 设置宽度
+        result.setWidth(dimension[2] - dimension[0]);
+        // 设置高度
+        result.setHeight(dimension[1] - dimension[3]);
+        // 设置名称（只对上亿有效）
+        result.setName("NEW");
+        // 设置子花样
+        Map<Long, UniChildPattern> childPatterns = new HashMap<>();
+        for (UniChildPattern childFrame : childFrames) {
+            childPatterns.put(RandomUtil.randomLong(), childFrame);
+        }
+        result.setChildList(childPatterns);
 
         return result;
     }
@@ -91,12 +94,11 @@ public class UniParser {
         return new int[]{minX, maxY, maxX, minY};
     }
 
-    protected IParserStrategy getTargetParserStrategy(byte[] totalFileBytes){
-        for (IParserStrategy strategy : PARSER_LIST) {
-            int len = strategy.getFileStartCodeLen();
-            byte[] fileStartCodeFromInput = Arrays.copyOfRange(totalFileBytes, 0, strategy.getFileStartCodeLen());
-            if(Arrays.equals(strategy.getFileStartCode(), fileStartCodeFromInput)) {
-                return strategy;
+
+    private IParserStrategy getTargetParserStrategy(byte[] totalFileBytes){
+        for (IParserStrategy iParserStrategy : PARSER_LIST) {
+            if(iParserStrategy.isSupport(totalFileBytes)) {
+                return iParserStrategy;
             }
         }
         return null;

@@ -1,13 +1,15 @@
 package com.codeleven.patternsystem.service;
 
 import cn.hutool.core.date.DateUtil;
+import com.codeleven.common.entity.UniPattern;
+import com.codeleven.common.entity.UniPoint;
+import com.codeleven.parser.UniParser;
+import com.codeleven.parser.dxf.DXFParserStrategy;
 import com.codeleven.patternsystem.config.MinioConfig;
 import com.codeleven.patternsystem.dao.ShoesPatternMapper;
 import com.codeleven.patternsystem.dto.Page;
 import com.codeleven.patternsystem.dto.PatternChildPO;
 import com.codeleven.patternsystem.dto.UniPatternPO;
-import com.codeleven.common.entity.UniPattern;
-import com.codeleven.patternsystem.parser.CADHelper;
 import com.codeleven.patternsystem.parser.systemtop.PatternTransformHelper;
 import com.codeleven.patternsystem.parser.transform.ITransformCommand;
 import com.codeleven.patternsystem.service.convert.DomainObj2PO;
@@ -77,11 +79,19 @@ public class ShoesPatternService extends BaseService<UniPatternPO> {
             UniPattern pattern = DomainObj2VO.convertToPattern(vo);
             // 下载花样数据文件DXF
             InputStream is = config.getObjectInputStream(pattern.getDxfPath());
-            CADHelper helper = new CADHelper(is);
-            // 加载 DXF 数据到 UniPattern 内
-            helper.loadChildPatternData(pattern);
-            helper.loadRefPointData(pattern);
-            helper.loadHeightWidthToPattern(pattern);
+            UniParser parser = new UniParser();
+            DXFParserStrategy strategy = (DXFParserStrategy) parser.getTargetParserStrategy();
+
+            // 设置属性到原先的pattern上
+            UniPattern temp = parser.doParse(is);
+            pattern.setChildList(temp.getChildList());
+            pattern.setName(temp.getName());
+            pattern.setWidth(temp.getWidth());
+            pattern.setHeight(temp.getHeight());
+
+            UniPoint refOriginPoint = strategy.getRefOriginPoint();
+            pattern.setRefOrigin(refOriginPoint);
+
             // 插入创建时间、更新时间信息
             pattern.setCreateTime(DateUtil.date());
             pattern.setUpdateTime(DateUtil.date());

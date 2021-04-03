@@ -1,28 +1,18 @@
-package com.codeleven.patternsystem.utils;
+package com.codeleven.parser.utils;
 
 import com.aspose.cad.fileformats.cad.DxfImage;
 import com.aspose.cad.fileformats.cad.cadobjects.*;
 import com.codeleven.common.entity.UniPoint;
 import com.codeleven.common.entity.UniFrame;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class DXFUtil {
-
-    /**
-     * 更新DXF里的数据点，基本都是数据点的问题
-     *
-     * @param entityIndex
-     * @param frames
-     */
-    public static void updatePoint(DxfImage image, int entityIndex, List<UniFrame> frames) {
-        ICadBaseEntity[] entities = image.getEntities();
-        ICadBaseEntity entity = entities[entityIndex];
-        if(entity instanceof CadLwPolyline) {
-
-        }
-    }
 
     /**
      * 处理 CAD 多段线
@@ -43,6 +33,34 @@ public class DXFUtil {
         return uniFrameList;
     }
 
+    public static List<ICadBaseEntity> getEntitiesFromLayer(DxfImage image, String layerName) {
+        List<ICadBaseEntity> result = new ArrayList<>();
+        for (ICadBaseEntity entity : image.getEntities()) {
+            if (entity.getLayerName().equals(layerName)) {
+                result.add(entity);
+            }
+        }
+        return result;
+    }
+
+    public static InputStream getBackgroundImage(DxfImage image, String layerName) throws FileNotFoundException {
+        for (CadBaseObject object : image.getObjects()) {
+            if(object instanceof CadRasterImageDef) {
+                CadRasterImageDef imageDef = (CadRasterImageDef) object;
+                if(imageDef.getImageIsLoadedFlag() == 1) {
+                    return new FileInputStream(imageDef.getFileName());
+                }
+            }
+        }
+        throw new FileNotFoundException("文件没有找到");
+    }
+
+    /**
+     * 判断两条直线是否相交
+     * @param line1 线段1
+     * @param line2 线段2
+     * @return 是否相交
+     */
     public static boolean isTwoLineIntersection(CadLine line1, CadLine line2) {
         Cad3DPoint first1 = line1.getFirstPoint();
         Cad3DPoint last1 = line1.getSecondPoint();
@@ -75,6 +93,12 @@ public class DXFUtil {
         return true;
     }
 
+    /**
+     * 如果两条直线有相交，则获取相交的点
+     * @param line1 线段1
+     * @param line2 线段2
+     * @return 相交的点
+     */
     public static UniPoint getIntersectionPoint(CadLine line1, CadLine line2){
         Cad3DPoint first1 = line1.getFirstPoint();
         Cad3DPoint last1 = line1.getSecondPoint();

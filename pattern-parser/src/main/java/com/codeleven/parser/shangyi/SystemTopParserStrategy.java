@@ -1,19 +1,17 @@
 package com.codeleven.parser.shangyi;
 
-import com.codeleven.common.entity.UniChildPattern;
-import com.codeleven.common.entity.UniFrame;
-import com.codeleven.parser.utils.ChildFrameHelper;
-import com.codeleven.parser.utils.FrameHelper;
-import com.codeleven.parser.IParserStrategy;
+import com.codeleven.parser.BaseParserStrategy;
+import com.codeleven.parser.dahao.DaHaoFileStruct;
 import com.codeleven.parser.utils.PatternPointUtil;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * 上亿花样 解析策略
  */
-public class SystemTopParserStrategy implements IParserStrategy {
+public class SystemTopParserStrategy extends BaseParserStrategy {
     @Override
     public byte[] getFrameEndCode() {
         return SystemTopFileStruct.FRAME_END_CODE;
@@ -35,32 +33,8 @@ public class SystemTopParserStrategy implements IParserStrategy {
     }
 
     @Override
-    public List<UniFrame> readFrames(byte[] totalBytes, int readOffset) {
-        byte[] readBytes = new byte[4];
-        // 用于构造List<UniFrame>
-        FrameHelper helper = new FrameHelper();
-        int frameOffset = 0;
-        do {
-            int beginOffset = SystemTopFileStruct.FIRST_FRAME_OFFSET.offset + frameOffset;
-            readBytes[0] = totalBytes[beginOffset];
-            readBytes[1] = totalBytes[beginOffset + 1];
-            readBytes[2] = totalBytes[beginOffset + 2];
-            readBytes[3] = totalBytes[beginOffset + 3];
-            // 中间有个 00 不知道什么作用
-            helper.addFrame(readBytes[0], PatternPointUtil.computeByteToInt(readBytes[2]), PatternPointUtil.computeByteToInt(readBytes[3]));
-            frameOffset += SystemTopFileStruct.FIRST_FRAME_OFFSET.size;
-        } while (!isEndOfFile(readBytes));
-        return helper.build();
-    }
-
-    @Override
-    public List<UniChildPattern> splitPattern(List<UniFrame> frames) {
-        ChildFrameHelper childFrameHelper = new ChildFrameHelper();
-        for (int i = 0; i < frames.size(); i++) {
-            UniFrame item = frames.get(i);
-            childFrameHelper.addFrame(item);
-        }
-        return childFrameHelper.build();
+    public int getOneFrameSize() {
+        return SystemTopFileStruct.FIRST_FRAME_OFFSET.size;
     }
 
     @Override
@@ -76,4 +50,18 @@ public class SystemTopParserStrategy implements IParserStrategy {
         return SystemTopFileStruct.FIRST_FRAME_OFFSET.offset;
     }
 
+    @Override
+    public boolean isSupport(InputStream is) {
+        byte[] temp = new byte[4];
+        try {
+            int read = is.read(temp);
+            if(read != SystemTopFileStruct.FILE_START_CODE.length) {
+                return false;
+            }
+            return Arrays.equals(temp, SystemTopFileStruct.FILE_START_CODE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
