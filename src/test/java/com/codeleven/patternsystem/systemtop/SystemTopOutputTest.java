@@ -1,15 +1,11 @@
 package com.codeleven.patternsystem.systemtop;
 
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
+import com.codeleven.common.entity.UniPattern;
 import com.codeleven.patternsystem.output.NPTOutputHelper;
-import com.codeleven.patternsystem.output.PrettyFramesOutputStrategy;
-import com.codeleven.patternsystem.parser.UniParser;
-import org.junit.jupiter.api.Assertions;
+import com.codeleven.parser.UniParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.util.List;
 
 public class SystemTopOutputTest {
     @Test

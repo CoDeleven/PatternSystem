@@ -1,11 +1,11 @@
 package com.codeleven.patternsystem.parser.dahao;
 
 import com.codeleven.patternsystem.entity.ChildPattern;
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.entity.UniPattern;
 import com.codeleven.patternsystem.parser.IPatternParser;
-import com.codeleven.patternsystem.parser.systemtop.FrameHelper;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
+import com.codeleven.parser.utils.FrameHelper;
+import com.codeleven.parser.shangyi.SystemTopControlCode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode.SKIP;
-import static com.codeleven.patternsystem.parser.systemtop.SystemTopFileStruct.FRAME_END_CODE;
-import static com.codeleven.patternsystem.parser.systemtop.SystemTopFileStruct.FIRST_FRAME_OFFSET;
+import static com.codeleven.parser.shangyi.SystemTopControlCode.SKIP;
+import static com.codeleven.parser.shangyi.SystemTopFileStruct.FRAME_END_CODE;
+import static com.codeleven.parser.shangyi.SystemTopFileStruct.FIRST_FRAME_OFFSET;
 
 public class DaHaoPatternParser implements IPatternParser {
     private final byte[] patternData;

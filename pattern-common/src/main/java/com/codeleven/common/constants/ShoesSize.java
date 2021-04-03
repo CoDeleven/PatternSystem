@@ -1,4 +1,4 @@
-package com.codeleven.patternsystem.common;
+package com.codeleven.common.constants;
 
 /**
  * 目前花样都是针对鞋子的

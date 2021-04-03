@@ -1,10 +1,9 @@
 package com.codeleven.patternsystem.service.convert;
 
 import cn.hutool.core.date.DateUtil;
-import com.codeleven.patternsystem.common.ShoesSize;
+import com.codeleven.common.constants.ShoesSize;
 import com.codeleven.patternsystem.config.MinioConfig;
 import com.codeleven.patternsystem.dto.UniPatternPO;
-import com.codeleven.patternsystem.entity.UniPattern;
 import com.codeleven.patternsystem.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

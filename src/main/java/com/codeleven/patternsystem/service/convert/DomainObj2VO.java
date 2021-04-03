@@ -2,18 +2,15 @@ package com.codeleven.patternsystem.service.convert;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
-import com.codeleven.patternsystem.common.ShoesSize;
+import com.codeleven.common.constants.ShoesSize;
 import com.codeleven.patternsystem.config.MinioConfig;
-import com.codeleven.patternsystem.dto.UniPatternPO;
-import com.codeleven.patternsystem.entity.UniChildPattern;
-import com.codeleven.patternsystem.entity.UniPattern;
+import com.codeleven.common.entity.UniChildPattern;
+import com.codeleven.common.entity.UniPattern;
 import com.codeleven.patternsystem.vo.PatternChildVO;
 import com.codeleven.patternsystem.vo.PatternCreateVO;
 import com.codeleven.patternsystem.vo.PatternDetailVO;
-import com.codeleven.patternsystem.vo.PatternVO;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DomainObj2VO {

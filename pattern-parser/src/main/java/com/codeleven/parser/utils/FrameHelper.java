@@ -1,6 +1,6 @@
-package com.codeleven.patternsystem.parser.systemtop;
+package com.codeleven.parser.utils;
 
-import com.codeleven.patternsystem.entity.UniFrame;
+import com.codeleven.common.entity.UniFrame;
 
 import java.util.LinkedList;
 import java.util.List;

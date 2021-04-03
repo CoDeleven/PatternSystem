@@ -1,10 +1,10 @@
-package com.codeleven.patternsystem.parser;
+package com.codeleven.parser;
 
 import cn.hutool.core.io.IoUtil;
-import com.codeleven.patternsystem.entity.ChildPattern;
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopParserStrategy;
+import com.codeleven.common.entity.UniChildPattern;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.entity.UniPattern;
+import com.codeleven.parser.shangyi.SystemTopParserStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class UniParser {
         // 5. 获取图形宽高、最大最小值
         int[] dimension = getDimension(uniFrames);
         // 6. 切分花样
-        List<ChildPattern> childFrames = targetParserStrategy.splitPattern(uniFrames);
+        List<UniChildPattern> childFrames = targetParserStrategy.splitPattern(uniFrames);
 
         // 设置花样数据
 //        result.setPatternName("NEW");

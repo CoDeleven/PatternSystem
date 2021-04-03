@@ -1,11 +1,8 @@
-package com.codeleven.patternsystem.entity;
+package com.codeleven.common.entity;
 
-import com.codeleven.patternsystem.dto.SimpleUser;
-import com.codeleven.patternsystem.dto.UniPoint;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 @Data

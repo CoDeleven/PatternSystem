@@ -1,16 +1,13 @@
 package com.codeleven.patternsystem.parser.transform;
 
-import cn.hutool.core.io.IoUtil;
 import com.codeleven.patternsystem.common.TransformData;
 import com.codeleven.patternsystem.entity.ChildPattern;
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
-import com.codeleven.patternsystem.parser.UniParser;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.entity.UniPattern;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import java.io.InputStream;
 import java.util.List;
 
 /**

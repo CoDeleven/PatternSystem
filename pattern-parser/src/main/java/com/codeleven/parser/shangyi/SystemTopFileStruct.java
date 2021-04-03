@@ -1,4 +1,4 @@
-package com.codeleven.patternsystem.parser.systemtop;
+package com.codeleven.parser.shangyi;
 
 /**
  * 上亿花样机文件结构

@@ -1,5 +1,6 @@
 package com.codeleven.patternsystem.entity;
 
+import com.codeleven.common.entity.UniFrame;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;

@@ -1,5 +1,7 @@
-package com.codeleven.patternsystem.entity;
+package com.codeleven.common.entity;
 
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.entity.UniPattern;
 import lombok.Data;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.codeleven.patternsystem.parser;
+package com.codeleven.parser;
 
-import com.codeleven.patternsystem.common.BaseEnum;
+import com.codeleven.common.constants.BaseEnum;
 
 public enum PatternSystemVendor implements BaseEnum<PatternSystemVendor, Integer> {
     SYSTEM_TOP("上亿花样机", 0x11), DAHAO("大豪花样机", 0x22), UNKNOWN("未知", 0x999);

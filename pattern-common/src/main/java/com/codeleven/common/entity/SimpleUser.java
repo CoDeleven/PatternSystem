@@ -1,4 +1,4 @@
-package com.codeleven.patternsystem.dto;
+package com.codeleven.common.entity;
 
 public class SimpleUser {
     private int id;             // 账号ID 方便检索

@@ -1,12 +1,5 @@
 package com.codeleven.patternsystem.systemtop;
 
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.parser.systemtop.FrameHelper;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.Random;
-
 public class SystemTopFrameHelperTest {
 //    /**
 //     * 检查 FrameHelper 能否正确处理 负数

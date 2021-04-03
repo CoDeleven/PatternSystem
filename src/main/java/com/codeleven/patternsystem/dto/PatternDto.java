@@ -1,8 +1,9 @@
 package com.codeleven.patternsystem.dto;
 
-import com.codeleven.patternsystem.common.ShoesSize;
-import com.codeleven.patternsystem.entity.UniPattern;
-import com.codeleven.patternsystem.parser.PatternSystemVendor;
+import com.codeleven.common.constants.ShoesSize;
+import com.codeleven.common.entity.SimpleUser;
+import com.codeleven.common.entity.UniPattern;
+import com.codeleven.parser.PatternSystemVendor;
 
 import java.util.Date;
 

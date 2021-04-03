@@ -1,8 +1,8 @@
 package com.codeleven.patternsystem.parser.transform;
 
 import cn.hutool.core.collection.ListUtil;
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.parser.shangyi.SystemTopControlCode;
 
 import java.util.ArrayList;
 import java.util.HashMap;

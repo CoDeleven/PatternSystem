@@ -1,14 +1,14 @@
 package com.codeleven.patternsystem.output;
 
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.entity.UniPattern;
+import com.codeleven.parser.shangyi.SystemTopControlCode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode.*;
-import static com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode.END;
+import static com.codeleven.parser.shangyi.SystemTopControlCode.*;
+import static com.codeleven.parser.shangyi.SystemTopControlCode.END;
 
 public class NSPOutputHelper {
     public static ByteArrayOutputStream output(UniPattern pattern) throws IOException {

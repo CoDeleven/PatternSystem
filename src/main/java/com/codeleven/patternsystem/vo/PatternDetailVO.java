@@ -1,9 +1,6 @@
 package com.codeleven.patternsystem.vo;
 
-import com.codeleven.patternsystem.entity.UniChildPattern;
-import com.codeleven.patternsystem.entity.UniFrame;
 import lombok.Data;
-import net.bytebuddy.implementation.bind.annotation.SuperCall;
 
 import java.util.List;
 

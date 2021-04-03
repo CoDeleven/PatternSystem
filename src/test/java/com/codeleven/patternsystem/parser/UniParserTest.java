@@ -1,6 +1,8 @@
 package com.codeleven.patternsystem.parser;
 
-import com.codeleven.patternsystem.parser.systemtop.SystemTopParserStrategy;
+import com.codeleven.parser.IParserStrategy;
+import com.codeleven.parser.UniParser;
+import com.codeleven.parser.shangyi.SystemTopParserStrategy;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 

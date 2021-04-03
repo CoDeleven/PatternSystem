@@ -3,12 +3,9 @@ package com.codeleven.patternsystem.utils;
 import com.aspose.cad.fileformats.cad.cadobjects.Cad2DPoint;
 import com.aspose.cad.fileformats.cad.cadobjects.CadLwPolyline;
 import com.aspose.cad.fileformats.cad.cadobjects.ICadBaseEntity;
-import com.codeleven.patternsystem.entity.ChildPattern;
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.parser.shangyi.SystemTopControlCode;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

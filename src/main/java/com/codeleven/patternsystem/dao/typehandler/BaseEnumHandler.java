@@ -1,8 +1,9 @@
 package com.codeleven.patternsystem.dao.typehandler;
 
-import com.codeleven.patternsystem.common.BaseEnum;
-import com.codeleven.patternsystem.common.ShoesSize;
-import com.codeleven.patternsystem.parser.PatternSystemVendor;
+import com.codeleven.common.constants.BaseEnum;
+import com.codeleven.common.constants.ShoesSize;
+
+import com.codeleven.parser.PatternSystemVendor;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedJdbcTypes;

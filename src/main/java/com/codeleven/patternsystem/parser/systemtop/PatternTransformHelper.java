@@ -1,21 +1,15 @@
 package com.codeleven.patternsystem.parser.systemtop;
 
-import cn.hutool.core.collection.ListUtil;
-import cn.hutool.core.util.ArrayUtil;
-import com.codeleven.patternsystem.entity.ChildPattern;
-import com.codeleven.patternsystem.entity.UniChildPattern;
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
+import com.codeleven.common.entity.UniChildPattern;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.entity.UniPattern;
 import com.codeleven.patternsystem.parser.transform.*;
-import com.codeleven.patternsystem.service.ShoesPatternService;
 import com.codeleven.patternsystem.vo.CommandVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

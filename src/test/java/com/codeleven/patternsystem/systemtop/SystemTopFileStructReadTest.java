@@ -1,16 +1,14 @@
 package com.codeleven.patternsystem.systemtop;
 
 import cn.hutool.core.io.IoUtil;
+import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.patternsystem.entity.ChildPattern;
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
-import com.codeleven.patternsystem.parser.IParserStrategy;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopParserStrategy;
-import com.codeleven.patternsystem.parser.UniParser;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.parser.IParserStrategy;
+import com.codeleven.parser.shangyi.SystemTopParserStrategy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -111,8 +109,8 @@ public class SystemTopFileStructReadTest {
         // 获取所有的Frame
         List<UniFrame> uniFrames = strategy.readFrames(totalBytes, frameStartOffset);
 
-        List<ChildPattern> childPatterns = strategy.splitPattern(uniFrames);
-        int childPatternSize = childPatterns.stream().mapToInt((i) -> i.getFrameList().size()).sum();
+        List<UniChildPattern> childPatterns = strategy.splitPattern(uniFrames);
+        int childPatternSize = childPatterns.stream().mapToInt((i) -> i.getPatternData().size()).sum();
         // 拆分子花样的时候，最后的跳针 和 结尾标识符被忽略
         Assertions.assertEquals(uniFrames.size(), childPatternSize + 2);
     }

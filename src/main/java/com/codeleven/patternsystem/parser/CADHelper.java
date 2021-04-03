@@ -2,18 +2,12 @@ package com.codeleven.patternsystem.parser;
 
 import com.aspose.cad.Image;
 import com.aspose.cad.fileformats.cad.DxfImage;
-import com.aspose.cad.fileformats.cad.cadobjects.CadBaseObject;
 import com.aspose.cad.fileformats.cad.cadobjects.CadLine;
-import com.aspose.cad.fileformats.cad.cadobjects.CadRasterImageDef;
 import com.aspose.cad.fileformats.cad.cadobjects.ICadBaseEntity;
-import com.aspose.cad.fileformats.cad.cadtables.CadLayerTable;
-import com.codeleven.patternsystem.dto.PatternChildPO;
-import com.codeleven.patternsystem.dto.UniPatternPO;
-import com.codeleven.patternsystem.dto.UniPoint;
-import com.codeleven.patternsystem.entity.ChildPattern;
-import com.codeleven.patternsystem.entity.UniChildPattern;
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
+import com.codeleven.common.entity.UniPoint;
+import com.codeleven.common.entity.UniChildPattern;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.entity.UniPattern;
 import com.codeleven.patternsystem.utils.DXFUtil;
 import com.codeleven.patternsystem.utils.PatternUtil;
 

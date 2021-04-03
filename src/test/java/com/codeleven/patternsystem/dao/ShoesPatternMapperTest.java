@@ -2,7 +2,7 @@ package com.codeleven.patternsystem.dao;
 
 import com.codeleven.patternsystem.dto.PatternChildPO;
 import com.codeleven.patternsystem.dto.UniPatternPO;
-import com.codeleven.patternsystem.dto.UniPoint;
+import com.codeleven.common.entity.UniPoint;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

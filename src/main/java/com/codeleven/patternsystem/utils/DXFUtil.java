@@ -2,8 +2,8 @@ package com.codeleven.patternsystem.utils;
 
 import com.aspose.cad.fileformats.cad.DxfImage;
 import com.aspose.cad.fileformats.cad.cadobjects.*;
-import com.codeleven.patternsystem.dto.UniPoint;
-import com.codeleven.patternsystem.entity.UniFrame;
+import com.codeleven.common.entity.UniPoint;
+import com.codeleven.common.entity.UniFrame;
 
 import java.util.LinkedList;
 import java.util.List;

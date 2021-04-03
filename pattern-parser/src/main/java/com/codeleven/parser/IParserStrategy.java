@@ -1,7 +1,7 @@
-package com.codeleven.patternsystem.parser;
+package com.codeleven.parser;
 
-import com.codeleven.patternsystem.entity.ChildPattern;
-import com.codeleven.patternsystem.entity.UniFrame;
+import com.codeleven.common.entity.UniChildPattern;
+import com.codeleven.common.entity.UniFrame;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +47,7 @@ public interface IParserStrategy {
      * @param frames 所有的针
      * @return 返回子花样列表
      */
-    List<ChildPattern> splitPattern(List<UniFrame> frames);
+    List<UniChildPattern> splitPattern(List<UniFrame> frames);
 
     /**
      * 获取有效的针迹字节数量

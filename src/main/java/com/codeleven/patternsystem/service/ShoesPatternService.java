@@ -6,7 +6,7 @@ import com.codeleven.patternsystem.dao.ShoesPatternMapper;
 import com.codeleven.patternsystem.dto.Page;
 import com.codeleven.patternsystem.dto.PatternChildPO;
 import com.codeleven.patternsystem.dto.UniPatternPO;
-import com.codeleven.patternsystem.entity.UniPattern;
+import com.codeleven.common.entity.UniPattern;
 import com.codeleven.patternsystem.parser.CADHelper;
 import com.codeleven.patternsystem.parser.systemtop.PatternTransformHelper;
 import com.codeleven.patternsystem.parser.transform.ITransformCommand;

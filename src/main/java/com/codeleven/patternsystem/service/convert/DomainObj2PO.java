@@ -5,9 +5,9 @@ import cn.hutool.core.lang.TypeReference;
 import cn.hutool.json.JSONUtil;
 import com.codeleven.patternsystem.dto.PatternChildPO;
 import com.codeleven.patternsystem.dto.UniPatternPO;
-import com.codeleven.patternsystem.entity.UniChildPattern;
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.entity.UniPattern;
+import com.codeleven.common.entity.UniChildPattern;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.entity.UniPattern;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

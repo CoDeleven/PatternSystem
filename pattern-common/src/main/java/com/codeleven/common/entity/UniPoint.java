@@ -1,4 +1,4 @@
-package com.codeleven.patternsystem.dto;
+package com.codeleven.common.entity;
 
 import lombok.Data;
 

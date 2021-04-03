@@ -1,14 +1,8 @@
 package com.codeleven.patternsystem.parser.transform;
 
 
-import cn.hutool.core.io.IoUtil;
-import com.codeleven.patternsystem.entity.UniPattern;
-import com.codeleven.patternsystem.parser.UniParser;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import java.io.InputStream;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;

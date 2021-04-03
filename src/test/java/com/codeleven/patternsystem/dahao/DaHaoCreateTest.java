@@ -1,14 +1,5 @@
 package com.codeleven.patternsystem.dahao;
 
-import com.codeleven.patternsystem.entity.UniPattern;
-import com.codeleven.patternsystem.output.NSPOutputHelper;
-import com.codeleven.patternsystem.output.PrettyFramesOutputStrategy;
-import com.codeleven.patternsystem.parser.dahao.DaHaoPatternParser;
-import com.codeleven.patternsystem.parser.UniParser;
-import org.junit.jupiter.api.Test;
-
-import java.io.*;
-
 public class DaHaoCreateTest {
 //    @Test
 //    public void testDaHaoCreate() throws IOException {

@@ -3,7 +3,7 @@ package com.codeleven.patternsystem.controller;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.json.JSONUtil;
 import com.codeleven.patternsystem.common.HttpResponse;
-import com.codeleven.patternsystem.common.ShoesSize;
+import com.codeleven.common.constants.ShoesSize;
 import com.codeleven.patternsystem.dto.PatternDto;
 import com.codeleven.patternsystem.parser.transform.TransformReceiver;
 import com.codeleven.patternsystem.vo.CommandVO;

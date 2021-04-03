@@ -1,13 +1,12 @@
 package com.codeleven.patternsystem.output;
 
-import com.codeleven.patternsystem.entity.UniFrame;
+import com.codeleven.common.entity.UniFrame;
 import com.codeleven.patternsystem.graphics.XYGraphics;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
+import com.codeleven.parser.shangyi.SystemTopControlCode;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 public class PrettyFramesOutputStrategy {

@@ -4,8 +4,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
-import com.codeleven.patternsystem.common.ShoesSize;
-import com.codeleven.patternsystem.parser.PatternSystemVendor;
+import com.codeleven.common.constants.ShoesSize;
+import com.codeleven.parser.PatternSystemVendor;
 import com.codeleven.patternsystem.utils.MinioUtil;
 import com.codeleven.patternsystem.vo.ShoesPatternVO;
 

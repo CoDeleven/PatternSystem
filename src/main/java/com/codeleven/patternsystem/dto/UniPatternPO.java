@@ -1,5 +1,7 @@
 package com.codeleven.patternsystem.dto;
 
+import com.codeleven.common.entity.SimpleUser;
+import com.codeleven.common.entity.UniPoint;
 import lombok.Data;
 
 import java.util.Date;

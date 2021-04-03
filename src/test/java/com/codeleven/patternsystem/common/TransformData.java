@@ -1,7 +1,7 @@
 package com.codeleven.patternsystem.common;
 
-import com.codeleven.patternsystem.entity.UniFrame;
-import com.codeleven.patternsystem.parser.systemtop.SystemTopControlCode;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.parser.shangyi.SystemTopControlCode;
 
 import java.util.ArrayList;
 import java.util.List;

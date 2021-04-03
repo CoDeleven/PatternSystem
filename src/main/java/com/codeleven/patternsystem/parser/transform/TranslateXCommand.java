@@ -1,6 +1,5 @@
 package com.codeleven.patternsystem.parser.transform;
 
-import com.codeleven.patternsystem.entity.UniPattern;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**

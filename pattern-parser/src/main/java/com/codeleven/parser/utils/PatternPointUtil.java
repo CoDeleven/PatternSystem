@@ -1,4 +1,4 @@
-package com.codeleven.patternsystem.utils;
+package com.codeleven.parser.utils;
 
 public class PatternPointUtil {
 
