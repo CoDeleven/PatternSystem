@@ -8,7 +8,7 @@ import com.codeleven.common.entity.UniFrame;
 import com.codeleven.common.entity.UniPoint;
 import com.codeleven.parser.IParserStrategy;
 import com.codeleven.parser.utils.DXFUtil;
-import com.codeleven.parser.utils.PatternUtil;
+import com.codeleven.common.utils.PatternUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;

@@ -2,7 +2,7 @@ package com.codeleven.parser.utils;
 
 import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
-import com.codeleven.parser.shangyi.SystemTopControlCode;
+import com.codeleven.common.constants.SystemTopControlCode;
 
 import java.util.ArrayList;
 import java.util.List;

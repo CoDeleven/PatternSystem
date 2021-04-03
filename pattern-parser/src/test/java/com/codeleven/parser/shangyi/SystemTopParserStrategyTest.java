@@ -1,6 +1,7 @@
 package com.codeleven.parser.shangyi;
 
 import cn.hutool.core.io.IoUtil;
+import com.codeleven.common.constants.SystemTopFileStruct;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

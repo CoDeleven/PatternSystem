@@ -1,7 +1,7 @@
 package com.codeleven.parser.shangyi;
 
+import com.codeleven.common.constants.SystemTopFileStruct;
 import com.codeleven.parser.BaseParserStrategy;
-import com.codeleven.parser.dahao.DaHaoFileStruct;
 import com.codeleven.parser.utils.PatternPointUtil;
 
 import java.io.IOException;

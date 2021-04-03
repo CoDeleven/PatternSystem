@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>pattern-core</artifactId>
+    <artifactId>pattern-creator</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -20,11 +20,6 @@
         <dependency>
             <groupId>com.codeleven</groupId>
             <artifactId>pattern-common</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.codeleven</groupId>
-            <artifactId>pattern-parser</artifactId>
             <version>0.0.1</version>
         </dependency>
     </dependencies>

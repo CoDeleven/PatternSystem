@@ -60,8 +60,10 @@ public class UniParser {
         result.setName("NEW");
         // 设置子花样
         Map<Long, UniChildPattern> childPatterns = new HashMap<>();
+
+        long index = 0;
         for (UniChildPattern childFrame : childFrames) {
-            childPatterns.put(RandomUtil.randomLong(), childFrame);
+            childPatterns.put(index++, childFrame);
         }
         result.setChildList(childPatterns);
 

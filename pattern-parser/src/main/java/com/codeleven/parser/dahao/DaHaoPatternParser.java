@@ -1,5 +1,6 @@
 package com.codeleven.parser.dahao;
 
+import com.codeleven.common.constants.DaHaoFileStruct;
 import com.codeleven.parser.BaseParserStrategy;
 import com.codeleven.parser.utils.PatternPointUtil;
 
