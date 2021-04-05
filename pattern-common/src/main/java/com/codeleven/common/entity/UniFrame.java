@@ -53,6 +53,11 @@ public class UniFrame {
     }
 
     @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return this.copyFrame();
+    }
+
+    @Override
     public String toString() {
         return "UniFrame{" +
                 "x=" + x +

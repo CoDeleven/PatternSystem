@@ -60,6 +60,7 @@ public class PatternTransformHelper {
             }
             // 构建Receiver
             TransformReceiver receiver = TransformReceiver.getInstance(childPattern.getPatternData(), true);
+            receiver.setUniPattern(pattern);
             // 获取Command
             return getCommand(receiver, patternTransformCommand.getOperation(), patternTransformCommand.getParam());
         } else {
@@ -68,6 +69,7 @@ public class PatternTransformHelper {
                     .flatMap((Function<UniChildPattern, Stream<UniFrame>>) uniChildPattern -> uniChildPattern.getPatternData().stream()).collect(Collectors.toList());
 
             TransformReceiver receiver = TransformReceiver.getInstance(totalFrames, false);
+            receiver.setUniPattern(pattern);
             return getCommand(receiver, patternTransformCommand.getOperation(), patternTransformCommand.getParam());
         }
     }

@@ -4,9 +4,24 @@ package com.codeleven.common.entity;
 import com.codeleven.common.constants.TransformOperation;
 
 public class PatternTransformCommand {
-    private final TransformOperation operation;
-    private final int[] param;
-    private final long childPatternNo;
+    private TransformOperation operation;
+    private int[] param;
+    private long childPatternNo;
+
+    public PatternTransformCommand() {
+    }
+
+    public void setOperation(TransformOperation operation) {
+        this.operation = operation;
+    }
+
+    public void setParam(int[] param) {
+        this.param = param;
+    }
+
+    public void setChildPatternNo(long childPatternNo) {
+        this.childPatternNo = childPatternNo;
+    }
 
     public PatternTransformCommand(TransformOperation operation, int childPatternNo, int... param) {
         this.operation = operation;

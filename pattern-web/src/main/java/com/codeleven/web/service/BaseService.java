@@ -2,7 +2,7 @@ package com.codeleven.web.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.codeleven.common.entity.Page;
-import com.codeleven.common.utils.RequestUtil;
+import com.codeleven.web.utils.RequestUtil;
 import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 

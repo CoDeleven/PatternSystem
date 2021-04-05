@@ -4,11 +4,11 @@ import cn.hutool.core.io.IoUtil;
 import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
 import com.codeleven.common.entity.UniPattern;
-import com.codeleven.common.utils.PatternUtil;
+import com.codeleven.core.utils.PatternUtil;
 import com.codeleven.core.common.TransformData;
 import com.codeleven.core.transform.TransformReceiver;
 import com.codeleven.core.transform.command.*;
-import com.codeleven.parser.UniParser;
+import com.codeleven.core.parser.UniParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -111,16 +111,17 @@ public class TransformReceiverTest {
             Assertions.assertEquals(frames2.get(i).getControlCode(), frames1.get(i).getControlCode());
         }
 
-        for (Long key : uniPattern.getChildList().keySet()) {
-            UniChildPattern child1 = uniPattern.getChildList().get(key);
+        List<UniChildPattern> patterns1 = PatternUtil.sortChildPatternByWeight(new ArrayList<>(uniPattern.getChildList().values()));
+        List<UniChildPattern> patterns2 = PatternUtil.sortChildPatternByWeight(new ArrayList<>(uniPattern2.getChildList().values()));
+        for (int i = 0; i < patterns1.size(); i++) {
+            UniChildPattern child1 = patterns1.get(i);
             if(child1.equals(childPattern)) continue;
-
             List<UniFrame> foo = child1.getPatternData();
-            List<UniFrame> bar = uniPattern2.getChildList().get(key).getPatternData();
-            for (int i = 0; i < foo.size(); i++) {
-                Assertions.assertEquals(bar.get(i).getY(), foo.get(i).getY());
-                Assertions.assertEquals(bar.get(i).getX(), foo.get(i).getX());
-                Assertions.assertEquals(bar.get(i).getControlCode(), foo.get(i).getControlCode());
+            List<UniFrame> bar = patterns2.get(i).getPatternData();
+            for (int j = 0; j < foo.size(); j++) {
+                Assertions.assertEquals(bar.get(j).getY(), foo.get(j).getY());
+                Assertions.assertEquals(bar.get(j).getX(), foo.get(j).getX());
+                Assertions.assertEquals(bar.get(j).getControlCode(), foo.get(j).getControlCode());
             }
         }
     }

@@ -3,10 +3,12 @@ package com.codeleven.core.transform;
 import cn.hutool.core.collection.ListUtil;
 import com.codeleven.common.constants.SystemTopControlCode;
 import com.codeleven.common.constants.TransformOperation;
+import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.entity.UniPattern;
+import com.codeleven.core.utils.PatternUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +18,8 @@ public class TransformReceiver {
     private final boolean isChildPattern;
     // 帧迹列表，可能是整个花样的也可能是子花样的，取决于isChildPattern
     private final List<UniFrame> frames;
+    // 用来接收结果的。。破坏了结构...
+    private UniPattern uniPattern;
 
     private TransformReceiver(List<UniFrame> frames, boolean isChildPattern) {
         this.frames = frames;
@@ -24,6 +28,10 @@ public class TransformReceiver {
 
     public static TransformReceiver getInstance(List<UniFrame> frames, boolean isChildPattern) {
         return new TransformReceiver(frames, isChildPattern);
+    }
+
+    public void setUniPattern(UniPattern uniPattern) {
+        this.uniPattern = uniPattern;
     }
 
     /**
@@ -45,10 +53,18 @@ public class TransformReceiver {
                 break;
             case CHANGE_FIRST_SEWING:
                 doSetFirstSewingForChild(data[0]);
+                updateSecondOriginalPoint(PatternUtil.getFirstFrame(uniPattern));
                 break;
             case CHANGE_PATTERN_SEWING_SEQ:
                 doChangeChildPatternSeq(data[0], data[1]);
+                updateSecondOriginalPoint(PatternUtil.getFirstFrame(uniPattern));
+                break;
         }
+    }
+
+    private void updateSecondOriginalPoint(UniFrame second) {
+        if(uniPattern == null) throw new RuntimeException("必须传入UniPattern...");
+        uniPattern.setSecondOrigin(PatternUtil.convertFrame2Point(second));
     }
 
     /**
@@ -61,48 +77,45 @@ public class TransformReceiver {
      */
     private void doChangeChildPatternSeq(int targetChildId, int insertionId) {
         if (targetChildId == insertionId) return;
+        if(uniPattern == null) throw new RuntimeException("交换子花样的顺序必须要传入UniPattern");
+        // 临时方案
 
-        Map<Integer, List<UniFrame>> childFrames = new HashMap<>();
-        int count = 1;
-        // j是 List的起始Index, i是最终的Index
-        for (int i = 0, j = 0; i < frames.size(); ++i) {
-            if (frames.get(i).getControlCode() == SystemTopControlCode.CUT.getCode()) {
-                childFrames.put(count, frames.subList(j, i + 1));
-                j = i + 1;
-                ++count;
-            }
-        }
+
+        Map<Long, UniChildPattern> childFrames = uniPattern.getChildList();
+
+        List<UniChildPattern> childPatternList = PatternUtil.sortChildPatternByWeight(new ArrayList<>(childFrames.values()));
+
         // 这种情况直接返回
         if (targetChildId > childFrames.size() || insertionId > childFrames.size() || targetChildId <= 0 || insertionId <= 0)
             return;
 
-        List<UniFrame> result = new ArrayList<>();
+        --targetChildId;
+        --insertionId;
+
         // 如果 目标子花样要往前挪动
         if (targetChildId > insertionId) {
             // 临时保存一个Entry
-            List<UniFrame> tempEntry = childFrames.get(targetChildId);
+            UniChildPattern tempEntry = childPatternList.get(targetChildId);
+            int count = 0;
             for (int i = targetChildId - 1; i >= insertionId; --i) {
-                List<UniFrame> item = childFrames.get(i);
-                childFrames.put(i + 1, item);
+                UniChildPattern item = childPatternList.get(i);
+                // 权重小了，顺序就在后面了
+                PatternUtil.decWeight(item, 1);
+                // 往后挪动了几个， tempEntry增加相应的权重
+                ++count;
             }
-            childFrames.put(insertionId, tempEntry);
+            PatternUtil.incWeight(tempEntry, count);
         } else {  // 如果 目标子花样要往后挪动
             // 临时保存一个Entry
-            List<UniFrame> tempEntry = childFrames.get(targetChildId);
+            UniChildPattern tempEntry = childPatternList.get(targetChildId);
+            int count = 0;
             for (int i = targetChildId + 1; i <= insertionId; ++i) {
-                List<UniFrame> item = childFrames.get(i);
-                childFrames.put(i - 1, item);
+                UniChildPattern item = childPatternList.get(i);
+                PatternUtil.incWeight(item, 1);
+                ++count;
             }
-            childFrames.put(insertionId, tempEntry);
+            PatternUtil.decWeight(tempEntry, count);
         }
-
-        for (int i = 1; i <= childFrames.size(); i++) {
-            List<UniFrame> tempList = childFrames.get(i);
-            result.addAll(tempList);
-        }
-
-        frames.clear();
-        frames.addAll(result);
     }
 
     /**

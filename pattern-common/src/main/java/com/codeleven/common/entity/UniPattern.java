@@ -16,6 +16,7 @@ public class UniPattern {
     private String name;                // 标识花样
     private SimpleUser user;            // 用户
     private UniPoint refOrigin;
+    private UniPoint secondOrigin;      // 次元点（基本以第一帧作为次元点）
     private String coverPath;                       // 封面路径（来自文件对象服务）
     private String dxfPath;                         // DXF花样数据路径（来自文件对象服务）
     private Map<Long, UniChildPattern> childList;     // 子花样
