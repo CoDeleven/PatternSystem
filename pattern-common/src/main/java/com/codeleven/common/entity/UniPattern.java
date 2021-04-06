@@ -1,5 +1,6 @@
 package com.codeleven.common.entity;
 
+import com.codeleven.common.constants.LockMethod;
 import lombok.Data;
 
 import java.util.Date;
@@ -20,6 +21,8 @@ public class UniPattern {
     private String coverPath;                       // 封面路径（来自文件对象服务）
     private String dxfPath;                         // DXF花样数据路径（来自文件对象服务）
     private Map<Long, UniChildPattern> childList;     // 子花样
+    private LockMethod lockMethod;      // 锁针方式
+    private boolean checkSimilarPoint;  // 是否检查相似点（距离只有1的），弹窗提示，如果确认就继续，否认就结束
     private int offsetX;
     private int offsetY;
 }

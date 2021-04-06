@@ -16,18 +16,36 @@ public class TransformReceiver {
 
     // 判断当前作用的对象是否是 子花样
     private final boolean isChildPattern;
+    private UniChildPattern childPattern;
     // 帧迹列表，可能是整个花样的也可能是子花样的，取决于isChildPattern
     private final List<UniFrame> frames;
     // 用来接收结果的。。破坏了结构...
     private UniPattern uniPattern;
 
-    private TransformReceiver(List<UniFrame> frames, boolean isChildPattern) {
-        this.frames = frames;
-        this.isChildPattern = isChildPattern;
+    private TransformReceiver(UniPattern pattern) {
+        this(pattern, 0);
     }
 
-    public static TransformReceiver getInstance(List<UniFrame> frames, boolean isChildPattern) {
-        return new TransformReceiver(frames, isChildPattern);
+    private TransformReceiver(UniPattern pattern, long childPatternId) {
+        if(childPatternId != 0){
+            UniChildPattern uniChildPattern = pattern.getChildList().get((long) childPatternId);
+            frames = uniChildPattern.getPatternData();
+            this.childPattern = uniChildPattern;
+            this.isChildPattern = true;
+        } else {
+            frames = PatternUtil.mergeChildPattern(pattern);
+            this.childPattern = null;
+            this.isChildPattern = false;
+        }
+        this.uniPattern = pattern;
+    }
+
+    public static TransformReceiver getInstance(UniPattern pattern, long childPatternId) {
+        return new TransformReceiver(pattern, childPatternId);
+    }
+    public static TransformReceiver getInstance(UniPattern pattern){
+        TransformReceiver receiver = new TransformReceiver(pattern);
+        return receiver;
     }
 
     public void setUniPattern(UniPattern uniPattern) {
@@ -126,6 +144,10 @@ public class TransformReceiver {
     private void doSetFirstSewingForChild(int targetPointIndexInChild) {
         // 临时存储的列表
         List<UniFrame> newFrameList = new ArrayList<>(frames.size());
+        boolean isFengBi = false;
+        if(frames.get(0).getX() == frames.get(frames.size() - 1).getX() && frames.get(0).getY() == frames.get(frames.size() - 1).getY()) {
+            isFengBi = true;
+        }
 
         // 如果是子花样，开头是跳缝，结尾是剪线，暂时不考虑 结束符那东西
         // 如果起始点的位置大于花样的点数总数，抛出异常
@@ -151,29 +173,38 @@ public class TransformReceiver {
         //    └──────────────────────────────────────────────────────────────────────────────┘
         //
 
-        // 对于子花样来说，最后一帧就是剪线（子花样的划分是我们决定的），注意，这里给的是拷贝的
-        UniFrame cutFrame = frames.get(frames.size() - 1).copyFrame();
         // 一般这种情况最后一帧会是 剪线。这里暂时不需要处理剪线，剪线的X、Y和前一帧一样即可。
-        List<UniFrame> listFromTargetToEnd = frames.subList(targetPointIndexInChild, frames.size() - 2);
+        List<UniFrame> listFromTargetToEnd = PatternUtil.copyList(frames.subList(targetPointIndexInChild, frames.size()));
         // subList 包含 0下标，不包含 targetPointIndex下标
-        List<UniFrame> listFromFirstToExcludedTarget = frames.subList(0, targetPointIndexInChild);
-        // 新的最后一帧
-        UniFrame newEndFrame = listFromFirstToExcludedTarget.get(listFromFirstToExcludedTarget.size() - 1);
-
-        // targetPointIndexInChild 设置为第一帧时必须是跳缝。更改 listFromTargetToEnd 里的第一帧，即targetPointIndex
-        listFromTargetToEnd.get(0).setControlCode(SystemTopControlCode.SKIP.getCode());
-        newFrameList.addAll(0, listFromTargetToEnd);
-
-        // 更新第一帧，设置为高速缝
+        List<UniFrame> listFromFirstToExcludedTarget = PatternUtil.copyList(frames.subList(0, targetPointIndexInChild));
+        // 本来第一帧是跳缝，修改为车缝
         listFromFirstToExcludedTarget.get(0).setControlCode(SystemTopControlCode.HIGH_SEWING.getCode());
 
-        // 更新最后一帧的剪线
-        cutFrame.setX(newEndFrame.getX());
-        cutFrame.setY(newEndFrame.getY());
+        // 新的最后一帧
+        List<UniFrame> lastControlCodeFrames = PatternUtil.getLastControlCodeFrames(listFromTargetToEnd);
+        PatternUtil.removeSameCoordinatorFrameForSewing(listFromTargetToEnd);
+        newFrameList.addAll(0, listFromTargetToEnd);
+        newFrameList.addAll(listFromFirstToExcludedTarget);
+
+
+        // 更新第一帧，设置为高速缝
+        for (int i = 0; i < lastControlCodeFrames.size(); i++) {
+            UniFrame lastFrame = newFrameList.get(newFrameList.size() - 1).copyFrame();
+            lastFrame.setControlCode(lastControlCodeFrames.get(i).getControlCode());
+            newFrameList.add(lastFrame);
+        }
+        for (UniFrame lastControlCodeFrame : lastControlCodeFrames) {
+            lastControlCodeFrame.setControlCode(SystemTopControlCode.HIGH_SEWING.getCode());
+        }
+        // 如果第一帧是原点位置，修改为车缝
+        if(!PatternUtil.isOriginalPoint(newFrameList.get(0))) {
+            newFrameList.get(0).setControlCode(SystemTopControlCode.SKIP.code);
+        } else {
+            newFrameList.get(0).setControlCode(SystemTopControlCode.HIGH_SEWING.code);
+        }
 
         // 替换，不要直接赋值
-        frames.clear();
-        frames.addAll(newFrameList);
+        childPattern.setPatternData(newFrameList);
     }
 
     /**
@@ -181,7 +212,7 @@ public class TransformReceiver {
      */
     private void doExchangeStartEnd() {
         // 将帧信息全部反转
-        List<UniFrame> newFrameList = ListUtil.reverseNew(frames);
+        List<UniFrame> newFrameList = PatternUtil.copyList(ListUtil.reverseNew(frames));
 
         // 这个index是第一个 车缝位置，它的值-1才是最后一个非车缝控制码
         int endOtherCodeCount = 0;
@@ -206,6 +237,10 @@ public class TransformReceiver {
         for (int i = (frames.size() - endOtherCodeCount); i < frames.size(); i++) {
             frames.get(i).setX(lastSewingFrame.getX());
             frames.get(i).setY(lastSewingFrame.getY());
+        }
+
+        if(isChildPattern){
+            childPattern.setPatternData(frames);
         }
     }
 

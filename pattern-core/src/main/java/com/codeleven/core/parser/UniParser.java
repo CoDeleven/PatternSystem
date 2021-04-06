@@ -64,7 +64,9 @@ public class UniParser {
         result.setSecondOrigin(new UniPoint(firstFrame.getX(), firstFrame.getY()));
 
         for (UniChildPattern childFrame : childFrames) {
-            childPatterns.put(RandomUtil.randomLong(), childFrame);
+            long tempId = RandomUtil.randomLong();
+            childFrame.setId(tempId);
+            childPatterns.put(tempId, childFrame);
         }
         result.setChildList(childPatterns);
 

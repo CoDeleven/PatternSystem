@@ -45,16 +45,16 @@ public class TransformReceiverTest {
      */
     @Test
     public void testTranslateXCommand() {
-        List<UniFrame> frames1 = PatternUtil.mergeChildPattern(uniPattern);
         List<UniFrame> frames2 = PatternUtil.mergeChildPattern(uniPattern2);
 
         // 获取 receiver
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(frames1, false);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(uniPattern);
         // 获取 X轴平移
         ITransformCommand command = new TranslateXCommand(totalPatternReceiver, 10);
         // 执行 Command
         command.execute();
 
+        List<UniFrame> frames1 = PatternUtil.mergeChildPattern(uniPattern);
         assert frames2.size() == frames1.size();
 
         for (int i = 0; i < frames1.size(); i++) {
@@ -69,16 +69,16 @@ public class TransformReceiverTest {
      */
     @Test
     public void testTranslateXCommandForNegative() {
-        List<UniFrame> frames1 = PatternUtil.mergeChildPattern(uniPattern);
         List<UniFrame> frames2 = PatternUtil.mergeChildPattern(uniPattern2);
 
         //         获取 receiver
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(frames1, false);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(uniPattern);
         //         获取 X轴平移
         ITransformCommand command = new TranslateXCommand(totalPatternReceiver, -10);
         //         执行 Command
         command.execute();
 
+        List<UniFrame> frames1 = PatternUtil.mergeChildPattern(uniPattern);
         assert frames2.size() == frames1.size();
 
         for (int i = 0; i < frames1.size(); i++) {
@@ -93,17 +93,18 @@ public class TransformReceiverTest {
      */
     @Test
     public void testTranslateXCommandForChild() {
-        List<UniFrame> frames1 = childPattern.getPatternData();
         List<UniFrame> frames2 = childPattern2.getPatternData();
 
         // 获取 receiver
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(frames1, true);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(uniPattern, childPattern.getId());
         // 获取 X轴平移
         ITransformCommand command = new TranslateXCommand(totalPatternReceiver, -10);
         // 执行 Command
         command.execute();
 
         assert childPattern.getPatternData().size() == childPattern.getPatternData().size();
+        List<UniFrame> frames1 = childPattern.getPatternData();
+
         // 保证仅在子花样内变动
         for (int i = 0; i < frames1.size(); i++) {
             Assertions.assertEquals(frames2.get(i).getY(), frames1.get(i).getY());
@@ -128,16 +129,16 @@ public class TransformReceiverTest {
 
     @Test
     public void testTranslateYCommand() {
-        List<UniFrame> frames1 = PatternUtil.mergeChildPattern(uniPattern);
         List<UniFrame> frames2 = PatternUtil.mergeChildPattern(uniPattern2);
 
         // 获取 receiver
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(frames1, false);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(uniPattern);
         // 获取 Y轴平移
         ITransformCommand command = new TranslateYCommand(totalPatternReceiver, 10);
         // 执行 Command
         command.execute();
 
+        List<UniFrame> frames1 = PatternUtil.mergeChildPattern(uniPattern);
         assert frames1.size() == frames2.size();
 
         for (int i = 0; i < frames1.size(); i++) {
@@ -150,107 +151,107 @@ public class TransformReceiverTest {
     @Test
     public void testChangeStartEndCommand() {
         // uniPattern1 执行了变换
-        List<UniFrame> init = TransformData.normalFrames();
+        UniPattern init = TransformData.normalFrames();
         List<UniFrame> after = TransformData.changeStartEndFrames();
 
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, true);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, PatternUtil.getChildPatternBySortedIndex(init, 0).getId());
         ITransformCommand command = new ChangeStartEndCommand(totalPatternReceiver);
         command.execute();
 
-        this.checkBeforeAndAfter(after, init);
+        this.checkBeforeAndAfter(after, PatternUtil.mergeChildPattern(init));
     }
 
     @Test
     public void testSetFirstSewingForChild() {
-        List<UniFrame> init = TransformData.normalFrames();
+        UniPattern init = TransformData.normalFrames();
         List<UniFrame> after = TransformData.afterChangeFirstSewingFrame();
 
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, true);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, PatternUtil.getChildPatternBySortedIndex(init, 0).getId());
         ITransformCommand command = new ChangeFirstSewingCommand(totalPatternReceiver, 6);
         command.execute();
 
-        this.checkBeforeAndAfter(after, init);
+        this.checkBeforeAndAfter(after, PatternUtil.mergeChildPattern(init));
 
     }
 
     @Test(expected = RuntimeException.class)
     public void testSetFirstSewingForErrorSize() {
-        List<UniFrame> init = TransformData.normalFrames();
-        List<UniFrame> after = TransformData.normalFrames();
+        UniPattern init = TransformData.normalFrames();
+        UniPattern after = TransformData.normalFrames();
 
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, true);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, PatternUtil.getChildPatternBySortedIndex(init, 0).getId());
         ITransformCommand command = new ChangeFirstSewingCommand(totalPatternReceiver, 99);
         command.execute();
 
-        this.checkBeforeAndAfter(after, init);
+        this.checkBeforeAndAfter(PatternUtil.mergeChildPattern(after), PatternUtil.mergeChildPattern(init));
     }
 
     @Test
     public void testSetFirstSewingFor0Target() {
-        List<UniFrame> init = TransformData.normalFrames();
-        List<UniFrame> after = TransformData.normalFrames();
+        UniPattern init = TransformData.normalFrames();
+        UniPattern after = TransformData.normalFrames();
 
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, true);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, PatternUtil.getChildPatternBySortedIndex(init, 0).getId());
         ITransformCommand command = new ChangeFirstSewingCommand(totalPatternReceiver, 0);
         command.execute();
 
-        this.checkBeforeAndAfter(after, init);
+        this.checkBeforeAndAfter(PatternUtil.mergeChildPattern(after), PatternUtil.mergeChildPattern(init));
     }
 
     @Test
     public void testChangePatternPositionPatternList1() {
-        List<UniFrame> init = TransformData.initPatternPositionList();
+        UniPattern init = TransformData.initPatternPositionList();
         List<UniFrame> after = TransformData.changePatternPositionPatternList42();
 
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, false);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init);
         ITransformCommand command = new ChangePatternSewingSeqCommand(totalPatternReceiver, 4, 2);
         command.execute();
 
-        this.checkBeforeAndAfter(after, init);
+        this.checkBeforeAndAfter(after, PatternUtil.mergeChildPattern(init));
     }
 
     @Test
     public void testChangePatternPositionPatternList2() {
-        List<UniFrame> init = TransformData.initPatternPositionList();
+        UniPattern init = TransformData.initPatternPositionList();
         List<UniFrame> after = TransformData.changePatternPositionPatternList13();
 
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, false);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init);
         ITransformCommand command = new ChangePatternSewingSeqCommand(totalPatternReceiver, 1, 3);
         command.execute();
 
-        this.checkBeforeAndAfter(after, init);
+        this.checkBeforeAndAfter(after, PatternUtil.mergeChildPattern(init));
     }
 
     @Test
     public void testChangePatternPositionPattern4ErrorSize() {
         // 测试越界情况，处理后也还是原样
-        List<UniFrame> init = TransformData.initPatternPositionList();
-        List<UniFrame> after = TransformData.initPatternPositionList();
+        UniPattern init = TransformData.initPatternPositionList();
+        UniPattern after = TransformData.initPatternPositionList();
 
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, false);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init);
         ITransformCommand command = new ChangePatternSewingSeqCommand(totalPatternReceiver, 1, 99);
         command.execute();
 
-        this.checkBeforeAndAfter(after, init);
+        this.checkBeforeAndAfter(PatternUtil.mergeChildPattern(after), PatternUtil.mergeChildPattern(init));
 
         command = new ChangePatternSewingSeqCommand(totalPatternReceiver, 0, 0);
         command.execute();
 
-        this.checkBeforeAndAfter(after, init);
+        this.checkBeforeAndAfter(PatternUtil.mergeChildPattern(after), PatternUtil.mergeChildPattern(init));
 
     }
 
     @Test
     public void testChangePatternPositionPattern4SameTarget() {
         // 测试越界情况，处理后也还是原样
-        List<UniFrame> init = TransformData.initPatternPositionList();
-        List<UniFrame> after = TransformData.initPatternPositionList();
+        UniPattern init = TransformData.initPatternPositionList();
+        UniPattern after = TransformData.initPatternPositionList();
 
-        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init, false);
+        TransformReceiver totalPatternReceiver = TransformReceiver.getInstance(init);
         ITransformCommand command = new ChangePatternSewingSeqCommand(totalPatternReceiver, 1, 1);
         command.execute();
 
-        this.checkBeforeAndAfter(after, init);
+        this.checkBeforeAndAfter(PatternUtil.mergeChildPattern(after), PatternUtil.mergeChildPattern(init));
     }
 
     private void checkBeforeAndAfter(List<UniFrame> expected, List<UniFrame> actual) {

@@ -58,6 +58,13 @@ public class UniFrame {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        assert obj instanceof UniFrame;
+        UniFrame other = (UniFrame) obj;
+        return other.getX() == this.getX() && other.getY() == this.getY();
+    }
+
+    @Override
     public String toString() {
         return "UniFrame{" +
                 "x=" + x +

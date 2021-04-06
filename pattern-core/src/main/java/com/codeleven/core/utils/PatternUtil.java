@@ -65,6 +65,98 @@ public class PatternUtil {
 //    }
 //
 
+    public static boolean isFengBiShape(UniChildPattern childPattern){
+        UniFrame firstFrame = childPattern.getPatternData().get(0);
+        UniFrame lastFrame = childPattern.getPatternData().get(childPattern.getPatternData().size() - 1);
+
+        return firstFrame.getX() == lastFrame.getX() && firstFrame.getY() == lastFrame.getY();
+    }
+
+    // 如果是封闭的图形，尾部节点需要往后继续打一些
+    public static void joinShape(UniChildPattern childPattern){
+        List<UniFrame> patternData = childPattern.getPatternData();
+        int lastSewingFrameIndex = getLastSewingFrameIndex(childPattern);
+
+        List<UniFrame> other = new ArrayList<>();
+        // 如果最后一个车缝点不是最后一个
+        if(lastSewingFrameIndex != patternData.size() - 1) {
+            for (int i = lastSewingFrameIndex + 1; i < patternData.size(); i++) {
+                other.add(patternData.get(i));
+            }
+        }
+
+        int otherSize = other.size();
+        for (int i = 1; i <= otherSize; i++) {
+            patternData.remove(patternData.size() - 1);
+        }
+
+        List<UniFrame> joinList = patternData.subList(2, 5);
+        patternData.addAll(joinList);
+
+        UniFrame newLastFrame = patternData.get(patternData.size() - 1);
+
+        for (UniFrame uniFrame : other) {
+            UniFrame foo = newLastFrame.copyFrame();
+            foo.setControlCode(uniFrame.getControlCode());
+            patternData.add(foo);
+        }
+    }
+
+    /**
+     * 移除相同的Frame，仅留下一个。（存在功能码和车缝时，仅保留车缝）
+     */
+    public static void removeSameCoordinatorFrameForSewing(List<UniFrame> frameList){
+        UniFrame lastFrame = null;
+        int endIndex = -1;
+        for (int i = 0; i < frameList.size(); i++) {
+            UniFrame cur = frameList.get(i);
+            if(lastFrame == null){
+                lastFrame = cur;
+                continue;
+            }
+
+            if(cur.equals(lastFrame)){
+                endIndex = i;
+                break;
+            }
+            lastFrame = cur;
+        }
+        if(endIndex == -1){
+            return;
+        }
+        int initSize = frameList.size();
+        for (int i = endIndex; i < initSize; i++) {
+            frameList.remove(endIndex);
+        }
+    }
+
+    public static boolean isOriginalPoint(UniFrame frame){
+        return frame.getX() == 0 && frame.getY() == 0;
+    }
+
+    public static List<UniFrame> getLastControlCodeFrames(List<UniFrame> frameList){
+        int lastSewingFrameIndex = getLastSewingFrameIndex(frameList);
+        List<UniFrame> result = new ArrayList<>();
+        for (int i = lastSewingFrameIndex + 1; i < frameList.size(); i++) {
+            result.add( frameList.get(i) );
+        }
+        return result;
+    }
+
+    public static int getLastSewingFrameIndex(UniChildPattern childPattern){
+        List<UniFrame> patternData = childPattern.getPatternData();
+        return getLastSewingFrameIndex(patternData);
+    }
+
+    public static int getLastSewingFrameIndex(List<UniFrame> frameList){
+        for (int i = frameList.size() - 1; i >= 0; i--) {
+            if(SystemTopControlCode.isSewingControlCode(frameList.get(i).getControlCode())){
+                return i;
+            }
+        }
+        throw new RuntimeException("获取最后一个车缝点失败");
+    }
+
     public static void incWeight(UniChildPattern childPattern, int step){
         int weight = childPattern.getWeight();
         childPattern.setWeight(weight + step);
@@ -83,10 +175,12 @@ public class PatternUtil {
     }
 
     public static UniChildPattern getChildPatternBySortedIndex(List<UniChildPattern> childPatterns, int index){
-        List<UniChildPattern> collect = childPatterns.stream()
-                .sorted(Comparator.comparingInt(UniChildPattern::getWeight))
-                .collect(Collectors.toList());
+        List<UniChildPattern> collect = sortChildPatternByWeight(childPatterns);
         return collect.get(index);
+    }
+
+    public static UniChildPattern getChildPatternBySortedIndex(UniPattern pattern, int index){
+        return getChildPatternBySortedIndex(new ArrayList<>(pattern.getChildList().values()), index);
     }
 
     public static List<UniFrame> mergeChildPattern(List<UniChildPattern> childPatterns){
@@ -104,9 +198,7 @@ public class PatternUtil {
     public static List<UniFrame> mergeChildPattern(UniPattern pattern){
         List<UniChildPattern> childPatterns = ListUtil.of(pattern.getChildList().values().toArray(new UniChildPattern[]{}));
 
-        List<UniChildPattern> collect = childPatterns.stream()
-                .sorted(Comparator.comparingInt(UniChildPattern::getWeight))
-                .collect(Collectors.toList());
+        List<UniChildPattern> collect = sortChildPatternByWeight(childPatterns);
 
         List<UniFrame> totalFrames = new ArrayList<>();
         for (UniChildPattern childPattern : collect) {
@@ -123,7 +215,12 @@ public class PatternUtil {
             List<Cad2DPoint> coordinates = ((CadLwPolyline) entity).getCoordinates();
             for (Cad2DPoint coordinate : coordinates) {
                 if(isFirst){
-                    controlCode = SystemTopControlCode.SKIP;
+                    if(coordinate.getX() == 0 && coordinate.getY() == 0){
+                        controlCode = SystemTopControlCode.HIGH_SEWING;
+                    } else {
+                        controlCode = SystemTopControlCode.SKIP;
+                    }
+
                     isFirst = false;
                 } else {
                     controlCode = SystemTopControlCode.HIGH_SEWING;
@@ -137,7 +234,11 @@ public class PatternUtil {
                 if(vertex instanceof Cad3DVertex) {
                     Cad3DPoint locationPoint = ((Cad3DVertex) vertex).getLocationPoint();
                     if(isFirst){
-                        controlCode = SystemTopControlCode.SKIP;
+                        if(locationPoint.getX() == 0 && locationPoint.getY() == 0){
+                            controlCode = SystemTopControlCode.HIGH_SEWING;
+                        } else {
+                            controlCode = SystemTopControlCode.SKIP;
+                        }
                         isFirst = false;
                     } else {
                         controlCode = SystemTopControlCode.HIGH_SEWING;
@@ -150,8 +251,6 @@ public class PatternUtil {
             throw new RuntimeException("暂不支持其他类型...");
         }
 
-        lockStart(frames, 4, 2);
-        lockEnd(frames, 4, 2);
         UniFrame lastFrame = frames.get(frames.size() - 1).copyFrame();
         lastFrame.setControlCode(SystemTopControlCode.CUT.getCode());
         frames.add(lastFrame);
@@ -204,7 +303,7 @@ public class PatternUtil {
         repeatSewing(total, beginIndex - len + 1, beginIndex, count);
     }
 
-    private static List<UniFrame> copyList(List<UniFrame> old){
+    public static List<UniFrame> copyList(List<UniFrame> old){
         List<UniFrame> result = new ArrayList<>();
         for (UniFrame uniFrame : old) {
             result.add(uniFrame.copyFrame());
@@ -243,6 +342,9 @@ public class PatternUtil {
     }
 
     public static UniFrame getFirstFrame(UniPattern pattern){
+        if(pattern == null){
+            throw new RuntimeException("必须传入UniPattern，才能重新设置原点");
+        }
         List<UniChildPattern> patterns = sortChildPatternByWeight(pattern.getChildList().values());
         List<UniFrame> patternData = patterns.get(0).getPatternData();
         return patternData.get(0);
