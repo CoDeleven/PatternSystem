@@ -45,8 +45,8 @@ public class PatternControllerTest {
         PatternCreateVO createVO = new PatternCreateVO();
         createVO.setName("测试花样");
         createVO.setSize(ShoesSize.SHOES_SIZE_38.getSize());
-        createVO.setPatternDataPath("pattern-file/Drawing3.dxf");
-        createVO.setCoverPath("cover-file/1616339839644-img047.jpg");
+        createVO.setPatternDataPath("pattern-file/1617613897168-img096.dxf");
+        createVO.setCoverPath("cover-file/1617613850069-img096.jpg");
         return createVO;
     }
 
@@ -74,7 +74,6 @@ public class PatternControllerTest {
         PatternCreateVO createVO = genPatternCreateVO();
 
         String contentJson = JSONUtil.toJsonStr(createVO);
-
         String contentAsString = mockMvc.perform(
                 MockMvcRequestBuilders.post("/pattern/create").contentType(MediaType.APPLICATION_JSON)
                         .content(contentJson))

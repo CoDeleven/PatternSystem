@@ -86,8 +86,8 @@
     <insert id="createChild" useGeneratedKeys="true" keyProperty="id" parameterType="java.util.List">
         INSERT INTO
         ps_child_pattern(`pattern_id`, `pattern_data_json`,`weight`) VALUES
-        <foreach collection="list" item="item" open="(" close=")">
-            #{item.patternId}, #{item.patternDataJson}, #{item.weight}
+        <foreach collection="list" item="item" separator=",">
+            (#{item.patternId}, #{item.patternDataJson}, #{item.weight})
         </foreach>
     </insert>
 </mapper>
