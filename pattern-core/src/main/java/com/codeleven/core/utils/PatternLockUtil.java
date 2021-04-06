@@ -11,39 +11,35 @@ import java.util.List;
 public class PatternLockUtil {
 
     // 如果是封闭的图形，尾部节点需要往后继续打一些
-    public static void lockJoin(UniChildPattern childPattern){
+    public static void lockJoin(UniChildPattern childPattern) {
         List<UniFrame> patternData = childPattern.getPatternData();
         lockJoin(patternData);
     }
 
     // 如果是封闭的图形，尾部节点需要往后继续打一些
-    public static void lockJoin(List<UniFrame> patternData){
-        List<UniFrame> other = null;
-        if(!SystemTopControlCode.isSewingControlCode(patternData.get(0).getControlCode())
-            && !SystemTopControlCode.isSewingControlCode(patternData.get(patternData.size() - 1).getControlCode())){
-            patternData.get(patternData.size() - 1).setControlCode(SystemTopControlCode.HIGH_SEWING.code);
-        } else {
-            PatternUtil.getLastControlCodeFrames(patternData);
-            int otherSize = other.size();
-            for (int i = 1; i <= otherSize; i++) {
-                patternData.remove(patternData.size() - 1);
-            }
+    public static void lockJoin(List<UniFrame> patternData) {
+        List<UniFrame> other = PatternUtil.copyList(PatternUtil.getLastControlCodeFrames(patternData));
+        int otherSize = other.size();
+        for (int i = 1; i <= otherSize; i++) {
+            patternData.remove(patternData.size() - 1);
         }
 
 
         // 获取第一个车缝点
         int firstSewingIndex = PatternUtil.getFirstSewingIndex(patternData);
+        // 第一个车缝点会被使用，所以应该从第一个点往后算
+        if (firstSewingIndex == 0) {
+            firstSewingIndex++;
+        }
         List<UniFrame> joinList = patternData.subList(firstSewingIndex, firstSewingIndex + 3);
         patternData.addAll(joinList);
 
         UniFrame newLastFrame = patternData.get(patternData.size() - 1);
 
-        if(other != null){
-            for (UniFrame uniFrame : other) {
-                UniFrame foo = newLastFrame.copyFrame();
-                foo.setControlCode(uniFrame.getControlCode());
-                patternData.add(foo);
-            }
+        for (UniFrame uniFrame : other) {
+            UniFrame foo = newLastFrame.copyFrame();
+            foo.setControlCode(uniFrame.getControlCode());
+            patternData.add(foo);
         }
     }
 
@@ -68,11 +64,11 @@ public class PatternLockUtil {
         total.addAll(to + 1, tempList);
     }
 
-    public static void lockStart(List<UniFrame> total, int len, int count){
+    public static void lockStart(List<UniFrame> total, int len, int count) {
         int beginIndex = -1;
         for (int i = 0; i < total.size(); i++) {
             UniFrame foo = total.get(i);
-            if(foo.getControlCode() == SystemTopControlCode.HIGH_SEWING.code){
+            if (foo.getControlCode() == SystemTopControlCode.HIGH_SEWING.code) {
                 beginIndex = i;
                 break;
             }
@@ -80,11 +76,11 @@ public class PatternLockUtil {
         repeatSewing(total, beginIndex, beginIndex + len - 1, count);
     }
 
-    public static void lockEnd(List<UniFrame> total, int len, int count){
+    public static void lockEnd(List<UniFrame> total, int len, int count) {
         int beginIndex = -1;
         for (int i = total.size() - 1; i >= 0; i--) {
             UniFrame foo = total.get(i);
-            if(foo.getControlCode() == SystemTopControlCode.HIGH_SEWING.code){
+            if (foo.getControlCode() == SystemTopControlCode.HIGH_SEWING.code) {
                 beginIndex = i;
                 break;
             }

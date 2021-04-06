@@ -59,7 +59,7 @@ public class PatternUtilTest {
     @Test
     public void testLockJoin2(){
         List<UniFrame> init = initData4Join2();
-        List<UniFrame> result = LogicTestData.afterLockJoin();
+        List<UniFrame> result = LogicTestData.afterLockJoin2();
 
         PatternLockUtil.lockJoin(init);
         for (int i = 0; i < init.size(); i++) {
