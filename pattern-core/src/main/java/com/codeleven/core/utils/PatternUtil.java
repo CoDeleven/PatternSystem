@@ -16,8 +16,6 @@ import com.codeleven.common.entity.UniPoint;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.codeleven.common.constants.SystemTopControlCode.SECOND_ORIGIN_POINT;
-
 public class PatternUtil {
 
     /**
@@ -72,36 +70,6 @@ public class PatternUtil {
         return firstFrame.getX() == lastFrame.getX() && firstFrame.getY() == lastFrame.getY();
     }
 
-    // 如果是封闭的图形，尾部节点需要往后继续打一些
-    public static void joinShape(UniChildPattern childPattern){
-        List<UniFrame> patternData = childPattern.getPatternData();
-        int lastSewingFrameIndex = getLastSewingFrameIndex(childPattern);
-
-        List<UniFrame> other = new ArrayList<>();
-        // 如果最后一个车缝点不是最后一个
-        if(lastSewingFrameIndex != patternData.size() - 1) {
-            for (int i = lastSewingFrameIndex + 1; i < patternData.size(); i++) {
-                other.add(patternData.get(i));
-            }
-        }
-
-        int otherSize = other.size();
-        for (int i = 1; i <= otherSize; i++) {
-            patternData.remove(patternData.size() - 1);
-        }
-
-        List<UniFrame> joinList = patternData.subList(2, 5);
-        patternData.addAll(joinList);
-
-        UniFrame newLastFrame = patternData.get(patternData.size() - 1);
-
-        for (UniFrame uniFrame : other) {
-            UniFrame foo = newLastFrame.copyFrame();
-            foo.setControlCode(uniFrame.getControlCode());
-            patternData.add(foo);
-        }
-    }
-
     /**
      * 移除相同的Frame，仅留下一个。（存在功能码和车缝时，仅保留车缝）
      */
@@ -135,26 +103,12 @@ public class PatternUtil {
     }
 
     public static List<UniFrame> getLastControlCodeFrames(List<UniFrame> frameList){
-        int lastSewingFrameIndex = getLastSewingFrameIndex(frameList);
+        int lastSewingFrameIndex = PatternPointUtil.getLastSewingFrameIndex(frameList);
         List<UniFrame> result = new ArrayList<>();
         for (int i = lastSewingFrameIndex + 1; i < frameList.size(); i++) {
             result.add( frameList.get(i) );
         }
         return result;
-    }
-
-    public static int getLastSewingFrameIndex(UniChildPattern childPattern){
-        List<UniFrame> patternData = childPattern.getPatternData();
-        return getLastSewingFrameIndex(patternData);
-    }
-
-    public static int getLastSewingFrameIndex(List<UniFrame> frameList){
-        for (int i = frameList.size() - 1; i >= 0; i--) {
-            if(SystemTopControlCode.isSewingControlCode(frameList.get(i).getControlCode())){
-                return i;
-            }
-        }
-        throw new RuntimeException("获取最后一个车缝点失败");
     }
 
     public static void incWeight(UniChildPattern childPattern, int step){
@@ -207,6 +161,15 @@ public class PatternUtil {
         return totalFrames;
     }
 
+    public static int getFirstSewingIndex(List<UniFrame> frames){
+        for (int i = 0; i < frames.size(); i++) {
+            if(SystemTopControlCode.isSewingControlCode(frames.get(i).getControlCode())){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public static List<UniFrame> convertChildPattern(ICadBaseEntity entity) {
         List<UniFrame> frames = new LinkedList<>();
         boolean isFirst = true;
@@ -257,52 +220,6 @@ public class PatternUtil {
         return frames;
     }
 
-    public static void repeatSewing(List<UniFrame> total, int start, int to, int count) {
-        // [start, to]
-        List<UniFrame> temp = copyList(total.subList(start, to + 1));
-        //
-        List<UniFrame> negative = copyList(ListUtil.reverseNew(temp));
-        // 不包含最后一个（反转后不包含第一个）
-        negative.remove(0);
-        List<UniFrame> positive = copyList(temp);
-        // 不包含第一个
-        positive.remove(0);
-
-        List<UniFrame> tempList = new ArrayList<>();
-        assert count % 2 == 0;
-        for (int i = 0; i < count / 2; i++) {
-            tempList.addAll(copyList(negative));
-            tempList.addAll(copyList(positive));
-        }
-
-        total.addAll(to + 1, tempList);
-    }
-
-    public static void lockStart(List<UniFrame> total, int len, int count){
-        int beginIndex = -1;
-        for (int i = 0; i < total.size(); i++) {
-            UniFrame foo = total.get(i);
-            if(foo.getControlCode() == SystemTopControlCode.HIGH_SEWING.code){
-                beginIndex = i;
-                break;
-            }
-        }
-        repeatSewing(total, beginIndex, beginIndex + len - 1, count);
-    }
-
-    public static void lockEnd(List<UniFrame> total, int len, int count){
-        int beginIndex = -1;
-        for (int i = total.size() - 1; i >= 0; i--) {
-            UniFrame foo = total.get(i);
-            if(foo.getControlCode() == SystemTopControlCode.HIGH_SEWING.code){
-                beginIndex = i;
-                break;
-            }
-        }
-
-        repeatSewing(total, beginIndex - len + 1, beginIndex, count);
-    }
-
     public static List<UniFrame> copyList(List<UniFrame> old){
         List<UniFrame> result = new ArrayList<>();
         for (UniFrame uniFrame : old) {
@@ -335,10 +252,6 @@ public class PatternUtil {
             temp.addAll(copyList(positiveSeq));
         }
         total.addAll(beginSewingIndex + len, temp);
-    }
-
-    public static UniPoint convertFrame2Point(UniFrame frame){
-        return new UniPoint(frame.getX(), frame.getY());
     }
 
     public static UniFrame getFirstFrame(UniPattern pattern){

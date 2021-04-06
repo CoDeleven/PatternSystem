@@ -1,5 +1,12 @@
 package com.codeleven.core.utils;
 
+import com.codeleven.common.constants.SystemTopControlCode;
+import com.codeleven.common.entity.UniChildPattern;
+import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.entity.UniPoint;
+
+import java.util.List;
+
 public class PatternPointUtil {
 
     /**
@@ -16,5 +23,31 @@ public class PatternPointUtil {
 
     public static int getUnsignedIntFrom2Byte(byte[] readBytes) {
         return ((readBytes[1] & 0xFF) << 8) | (readBytes[0] & 0xFF);
+    }
+
+    public static byte computeInt2OneByte(int val, boolean isNegative){
+        return (byte) (isNegative ? (0xFF - val + 1) : val);
+    }
+
+    public static int getLastSewingFrameIndex(UniChildPattern childPattern){
+        List<UniFrame> patternData = childPattern.getPatternData();
+        return getLastSewingFrameIndex(patternData);
+    }
+
+    public static int getLastSewingFrameIndex(List<UniFrame> frameList){
+        for (int i = frameList.size() - 1; i >= 0; i--) {
+            if(SystemTopControlCode.isSewingControlCode(frameList.get(i).getControlCode())){
+                return i;
+            }
+        }
+        throw new RuntimeException("获取最后一个车缝点失败");
+    }
+
+    public static UniPoint convertFrame2Point(UniFrame frame){
+        return new UniPoint(frame.getX(), frame.getY());
+    }
+
+    public static UniFrame convertPoint2Frame(UniPoint point){
+        return new UniFrame(point.getX(), point.getY());
     }
 }

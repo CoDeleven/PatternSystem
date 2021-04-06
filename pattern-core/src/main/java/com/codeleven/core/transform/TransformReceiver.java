@@ -6,6 +6,7 @@ import com.codeleven.common.constants.TransformOperation;
 import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
 import com.codeleven.common.entity.UniPattern;
+import com.codeleven.core.utils.PatternPointUtil;
 import com.codeleven.core.utils.PatternUtil;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class TransformReceiver {
 
     private void updateSecondOriginalPoint(UniFrame second) {
         if(uniPattern == null) throw new RuntimeException("必须传入UniPattern...");
-        uniPattern.setSecondOrigin(PatternUtil.convertFrame2Point(second));
+        uniPattern.setSecondOrigin(PatternPointUtil.convertFrame2Point(second));
     }
 
     /**

@@ -4,6 +4,7 @@ import com.codeleven.common.constants.SystemTopControlCode;
 import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
 import com.codeleven.common.entity.UniPattern;
+import com.codeleven.core.utils.PatternLockUtil;
 import com.codeleven.core.utils.PatternUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -27,6 +28,13 @@ public class NSPOutputHelper {
         boolean setSecondPoint = false;
         for (UniChildPattern childPattern : childPatterns) {
             List<UniFrame> patternData = childPattern.getPatternData();
+            if(PatternUtil.isFengBiShape(childPattern)){
+                PatternLockUtil.lockJoin(childPattern);
+            } else {
+                PatternLockUtil.lockStart(patternData, 3, 2);
+                PatternLockUtil.lockEnd(patternData, 3, 2);
+            }
+
             for (UniFrame frame : patternData) {
                 byte[] bytes = convertUniFrame(lastFrame, frame);
                 frameByteArray.write(bytes);
