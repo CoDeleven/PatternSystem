@@ -2,6 +2,7 @@ package com.codeleven.core.parser;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.codeleven.common.constants.LockMethod;
 import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
 import com.codeleven.common.entity.UniPattern;
@@ -9,6 +10,7 @@ import com.codeleven.common.entity.UniPoint;
 import com.codeleven.core.parser.dahao.DaHaoPatternParser;
 import com.codeleven.core.parser.dxf.DXFParserStrategy;
 import com.codeleven.core.parser.shangyi.SystemTopParserStrategy;
+import com.codeleven.core.utils.PatternUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +71,21 @@ public class UniParser {
             childPatterns.put(tempId, childFrame);
         }
         result.setChildList(childPatterns);
+        // 处理锁针方式
+        this.handleLockMethod(childFrames);
 
         return result;
+    }
+
+    private void handleLockMethod(List<UniChildPattern> childs){
+        // 设置锁针方式
+        for (UniChildPattern child : childs) {
+            if(PatternUtil.isFengBiShape(child)){
+                child.setLockMethod(LockMethod.LOCK_JOIN);
+            } else {
+                child.setLockMethod(LockMethod.LOCK_BACK);
+            }
+        }
     }
 
     /**

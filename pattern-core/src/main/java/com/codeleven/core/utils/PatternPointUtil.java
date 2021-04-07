@@ -25,8 +25,15 @@ public class PatternPointUtil {
         return ((readBytes[1] & 0xFF) << 8) | (readBytes[0] & 0xFF);
     }
 
-    public static byte computeInt2OneByte(int val, boolean isNegative){
-        return (byte) (isNegative ? (0xFF - val + 1) : val);
+    /**
+     * 在上亿系统中，坐标轴的 值，第一位是0表示正数，为1表示负数
+     *
+     * @param val
+     * @param isNegative
+     * @return
+     */
+    public static byte computeInt2NPTOneByte(int val, boolean isNegative){
+        return (byte) (isNegative ? (0x80 | val) : val);
     }
 
     public static int getLastSewingFrameIndex(UniChildPattern childPattern){

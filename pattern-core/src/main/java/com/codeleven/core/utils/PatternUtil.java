@@ -138,9 +138,7 @@ public class PatternUtil {
     }
 
     public static List<UniFrame> mergeChildPattern(List<UniChildPattern> childPatterns){
-        List<UniChildPattern> collect = childPatterns.stream()
-                .sorted(Comparator.comparingInt(UniChildPattern::getWeight))
-                .collect(Collectors.toList());
+        List<UniChildPattern> collect = sortChildPatternByWeight(childPatterns);
 
         List<UniFrame> totalFrames = new ArrayList<>();
         for (UniChildPattern childPattern : collect) {
@@ -226,32 +224,6 @@ public class PatternUtil {
             result.add(uniFrame.copyFrame());
         }
         return result;
-    }
-
-    public static void repeatStartSewing(List<UniFrame> total, int len, int count){
-        int beginSewingIndex = -1;
-        for (int i = 0; i < total.size(); i++) {
-            if(total.get(i).getControlCode() == SystemTopControlCode.SKIP.code){
-                continue;
-            }
-            if(total.get(i).getControlCode() == SystemTopControlCode.HIGH_SEWING.code){
-                beginSewingIndex = i;
-                break;
-            }
-        }
-        List<UniFrame> positiveSeq = new ArrayList<>(total.subList(beginSewingIndex, beginSewingIndex + len));
-        List<UniFrame> negativeSeq = ListUtil.reverseNew(new ArrayList<>(total.subList(beginSewingIndex, beginSewingIndex + len)));
-        positiveSeq.remove(0);
-        negativeSeq.remove(0);
-
-        List<UniFrame> temp = new ArrayList<>();
-
-        assert count % 2 == 0;
-        for (int i = 0; i < count / 2; i++) {
-            temp.addAll(copyList(negativeSeq));
-            temp.addAll(copyList(positiveSeq));
-        }
-        total.addAll(beginSewingIndex + len, temp);
     }
 
     public static UniFrame getFirstFrame(UniPattern pattern){

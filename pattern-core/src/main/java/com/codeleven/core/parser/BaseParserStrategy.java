@@ -1,10 +1,12 @@
 package com.codeleven.core.parser;
 
+import com.codeleven.common.constants.LockMethod;
 import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
 import com.codeleven.core.utils.ChildFrameHelper;
 import com.codeleven.core.utils.FrameHelper;
 import com.codeleven.core.utils.PatternPointUtil;
+import com.codeleven.core.utils.PatternUtil;
 
 import java.util.List;
 

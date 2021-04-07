@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.codeleven.common.constants.SystemTopControlCode.*;
-import static com.codeleven.core.utils.PatternPointUtil.computeInt2OneByte;
+import static com.codeleven.core.utils.PatternPointUtil.computeInt2NPTOneByte;
 
 public class NPTOutputHStrategy implements IOutputHStrategy {
 
@@ -29,6 +29,7 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
     int maxY = Integer.MIN_VALUE;
 
     private static byte[] convertUniFrame(UniFrame lastFrame, UniFrame uniFrame) throws IOException {
+        final int threshold = 127;
         int subX = uniFrame.getX() - lastFrame.getX();
         int subY = uniFrame.getY() - lastFrame.getY();
 
@@ -38,10 +39,10 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
         boolean negativeX = subX < 0;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         // 是否需要拆分
-        boolean needSplit = absoluteX > 127 || absoluteY > 127;
+        boolean needSplit = absoluteX > threshold || absoluteY > threshold;
         if (needSplit) {
             int max = Math.max(absoluteX, absoluteY);   // 最大的数
-            int splitNum = (max / 127) + 1;       // 需要拆分的个数；实际上拆分出 splitNum+1 个字节
+            int splitNum = (max / threshold) + 2;       // 需要拆分的个数；实际上拆分出 splitNum+1 个字节
             if (splitNum <= 1) {
                 throw new RuntimeException("异常...");
             }
@@ -67,7 +68,7 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
                         tempY += 1;
                         tempSurplusY--;
                     }
-                    byteArrayOutputStream.write(new byte[]{(byte) CONTINUE_SKIP.getCode(), 0x0, computeInt2OneByte(tempX, negativeX), computeInt2OneByte(tempY, negativeY)});
+                    byteArrayOutputStream.write(new byte[]{(byte) CONTINUE_SKIP.getCode(), 0x0, computeInt2NPTOneByte(tempX, negativeX), computeInt2NPTOneByte(tempY, negativeY)});
                 }
                 byteArrayOutputStream.write(new byte[]{(byte) DROP_NEEDLE.getCode(), 0, 0, 0});
             } else if (SystemTopControlCode.isSkipControlCode(uniFrame.getControlCode())) {
@@ -84,16 +85,16 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
                         tempY += 1;
                         tempSurplusY--;
                     }
-                    byteArrayOutputStream.write(new byte[]{(byte) CONTINUE_SKIP.getCode(), 0x0, computeInt2OneByte(tempX, negativeX), computeInt2OneByte(tempY, negativeY)});
+                    byteArrayOutputStream.write(new byte[]{(byte) CONTINUE_SKIP.getCode(), 0x0, computeInt2NPTOneByte(tempX, negativeX), computeInt2NPTOneByte(tempY, negativeY)});
                 }
-                byteArrayOutputStream.write(new byte[]{(byte) SKIP.getCode(), 0x0, computeInt2OneByte(avgXByte, negativeX), computeInt2OneByte(avgYByte, negativeY)});
+                byteArrayOutputStream.write(new byte[]{(byte) SKIP.getCode(), 0x0, computeInt2NPTOneByte(avgXByte, negativeX), computeInt2NPTOneByte(avgYByte, negativeY)});
             } else if (SystemTopControlCode.isEndControlCode(uniFrame.getControlCode())) {
                 byteArrayOutputStream.write(new byte[]{(byte) END.getCode(), 0, 0, 0});
             } else {
                 System.out.println("需要拆分但控制码不正确:" + uniFrame.getControlCode());
             }
         } else {
-            byteArrayOutputStream.write(new byte[]{(byte) uniFrame.getControlCode(), 0x0, computeInt2OneByte(absoluteX, negativeX), computeInt2OneByte(absoluteY, negativeY)});
+            byteArrayOutputStream.write(new byte[]{(byte) uniFrame.getControlCode(), 0x0, computeInt2NPTOneByte(absoluteX, negativeX), computeInt2NPTOneByte(absoluteY, negativeY)});
         }
         return byteArrayOutputStream.toByteArray();
     }
@@ -126,9 +127,11 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
         // 按权重排序
         Collection<UniChildPattern> childPatterns = PatternUtil.sortChildPatternByWeight(pattern.getChildList().values());
         // 最普通的车缝数据，跳缝+剪线，通过DXF进来的通常只有这几种数据
-        List<UniFrame> allFrames = PatternUtil.mergeChildPattern(new ArrayList<>(childPatterns));
 
-        extendContent(pattern, allFrames);
+        extendContent(pattern);
+        List<UniFrame> allFrames = PatternUtil.mergeChildPattern(new ArrayList<>(childPatterns));
+        // 上亿的特殊处理
+        handleZeroSewing(allFrames);
 
         UniFrame lastFrame = UniFrame.ZERO_FRAME;
         for (UniFrame frame : allFrames) {
@@ -153,6 +156,25 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
         return result;
     }
 
+    /**
+     * 上亿似乎不能出现 6,0,0  61,0,0这样的情况
+     * @return
+     */
+    private void handleZeroSewing(List<UniFrame> allFrames){
+        for (int i = 0; i < allFrames.size() - 1; i++) {
+            UniFrame uniFrame = allFrames.get(i);
+            if(uniFrame.getControlCode() == SECOND_ORIGIN_POINT.code &&
+                uniFrame.getX() == 0 && uniFrame.getY() == 0) {
+                UniFrame next = allFrames.get(i + 1);
+//                if(SystemTopControlCode.isSewingControlCode(next.getControlCode()) &&
+//                    next.getX() == 0 && next.getY() == 0)   {
+//
+//                }
+                allFrames.remove(0);
+            }
+        }
+    }
+
     @Override
     public ByteArrayOutputStream genEndFrameList(UniPattern pattern) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -161,7 +183,7 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
             throw new RuntimeException("生成文件结尾时，缺少次元点...");
         }
         UniFrame skip2SecondOriginal = PatternPointUtil.convertPoint2Frame(secondOrigin);
-        skip2SecondOriginal.setControlCode(SECOND_ORIGIN_POINT.code);
+        skip2SecondOriginal.setControlCode(SKIP.code);
 
         List<UniFrame> uniFrames = PatternUtil.mergeChildPattern(pattern);
         UniFrame lastFrame = uniFrames.get(uniFrames.size() - 1);
@@ -187,17 +209,16 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
     /**
      * 扩展车缝内容
      *
-     * @param content 普通车缝数据
      */
-    private void extendContent(UniPattern uniPattern, List<UniFrame> content) {
-        this.handleLock(uniPattern, content);
+    private void extendContent(UniPattern uniPattern) {
+        this.handleLock(uniPattern);
         // 处理次元点
-        this.handleSecondPoint(uniPattern, content);
+        this.handleSecondPoint(uniPattern);
     }
 
-    private void handleLock(UniPattern uniPattern, List<UniFrame> content) {
+    private void handleLock(UniPattern uniPattern) {
         // 获取所有的子花样
-        List<UniChildPattern> childList = new ArrayList<>(uniPattern.getChildList().values());
+        Collection<UniChildPattern> childList = uniPattern.getChildList().values();
         // 遍历子花样
         for (UniChildPattern uniChildPattern : childList) {
             // 获取子花样的锁针方式
@@ -205,14 +226,17 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
             // 倒缝锁针
             if (lockMethod == LockMethod.LOCK_BACK) {
                 // 从起点开始，往前3个， 回来，过去，算一次
-                PatternUtil.repeatStartSewing(uniChildPattern.getPatternData(), 3, 2);
+                PatternLockUtil.lockStart(uniChildPattern.getPatternData(), 3, 2);
+                PatternLockUtil.lockEnd(uniChildPattern.getPatternData(), 3, 2);
             } else if (lockMethod == LockMethod.LOCK_JOIN) {
                 PatternLockUtil.lockJoin(uniChildPattern);
             }
         }
     }
 
-    private void handleSecondPoint(UniPattern uniPattern, List<UniFrame> content) {
+    private void handleSecondPoint(UniPattern uniPattern) {
+        UniChildPattern uniChildPattern = PatternUtil.getChildPatternBySortedIndex(uniPattern, 0);
+        List<UniFrame> content = uniChildPattern.getPatternData();
         // 目前没有手动设置次元点
         UniFrame first = content.get(0);
         UniFrame temp = first.copyFrame();
