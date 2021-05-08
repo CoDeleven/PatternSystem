@@ -26,6 +26,10 @@ public class ChildFrameHelper {
                 childPatternFrameList.add(tempSecondOriginal);
                 needMergeSkip = false;
             } else {
+                // 如果遇到特殊情况 没有剪线的，就需要增加child
+                if(childPatternFrameList != null && childPatternFrameList.size() > 1){
+                    uniChildPatterns.add(genChildPattern(childPatternFrameList));
+                }
                 // 如果遇到 SKIP 则新建一个List
                 childPatternFrameList = new ArrayList<>();
                 childPatternFrameList.add(frame);

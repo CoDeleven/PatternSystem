@@ -10,8 +10,8 @@ public class UniOutput {
         try {
             ByteArrayOutputStream headerStream = strategy.genFileHeader(uniPattern);
             ByteArrayOutputStream contentStream = strategy.genContent(uniPattern);
-            strategy.afterContentGenerated(headerStream, contentStream, uniPattern);
             ByteArrayOutputStream fileEndStream = strategy.genEndFrameList(uniPattern);
+            strategy.afterContentGenerated(headerStream, contentStream, uniPattern);
 
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             // 写入数据

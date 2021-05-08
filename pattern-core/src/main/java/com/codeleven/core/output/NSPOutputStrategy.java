@@ -1,8 +1,6 @@
 package com.codeleven.core.output;
 
 import com.codeleven.common.constants.LockMethod;
-import com.codeleven.common.constants.SystemTopControlCode;
-import com.codeleven.common.constants.SystemTopFileStruct;
 import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
 import com.codeleven.common.entity.UniPattern;
@@ -19,34 +17,22 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.codeleven.common.constants.SystemTopControlCode.*;
-import static com.codeleven.core.utils.PatternPointUtil.computeInt2NPTOneByte;
+import static com.codeleven.common.constants.SystemTopControlCode.SECOND_ORIGIN_POINT;
 
-public class NPTOutputHStrategy implements IOutputHStrategy {
-
+public class NSPOutputStrategy implements IOutputHStrategy{
     // 用于记录最大值，最小值。在处理了Content时候自动填充这些属性
     int minX = Integer.MAX_VALUE;
     int minY = Integer.MAX_VALUE;
     int maxX = Integer.MIN_VALUE;
     int maxY = Integer.MIN_VALUE;
 
-    private static byte[] convertInt2NPTStructByte(int val, int availableByteCount) {
-        byte[] bytes = new byte[availableByteCount];
-        for (int i = 0; i < availableByteCount; i++) {
-            bytes[i] = (byte) ((val >> (i * 8)) & 0xFF);
-        }
-        return bytes;
-    }
-
     @Override
     public ByteArrayOutputStream genFileHeader(UniPattern pattern) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         // 写入文件头，四个字节
-        result.write(SystemTopFileStruct.FILE_START_CODE);
-        // 写入文件名称
-        result.write("NEW".getBytes());
-        // 空余的9个字节。截止该行语句执行完后，已写入16个字节
-        result.write(new byte[9]);
-
+        result.write(DaHaoFileStruct.FILE_START_CODE);
+        // 写入我也不知道是啥玩意的东西，因为都固定是它，所以不动
+        result.write(new byte[]{(byte) 0x80, 0x00, 0x00, 0x00});
         // 这里还有一些字节需要写入，但是缺少信息，放在 genContent()之后
         return result;
     }
@@ -86,26 +72,43 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
         return result;
     }
 
-    /**
-     * 上亿似乎不能出现 6,0,0  61,0,0这样的情况
-     * @return
-     */
-    private void handleZeroSewing(List<UniFrame> allFrames){
-        for (int i = 0; i < allFrames.size() - 1; i++) {
-            UniFrame uniFrame = allFrames.get(i);
-            if(uniFrame.getControlCode() == SECOND_ORIGIN_POINT.code &&
-                uniFrame.getX() == 0 && uniFrame.getY() == 0) {
-                UniFrame next = allFrames.get(i + 1);
-//                if(SystemTopControlCode.isSewingControlCode(next.getControlCode()) &&
-//                    next.getX() == 0 && next.getY() == 0)   {
-//
-//                }
-                allFrames.remove(0);
-            }
+    private static byte[] convertInt2NPTStructByte(int val, int availableByteCount) {
+        byte[] bytes = new byte[availableByteCount];
+        for (int i = 0; i < availableByteCount; i++) {
+            bytes[i] = (byte) ((val >> (i * 8)) & 0xFF);
         }
+        return bytes;
     }
 
-    private int endFrameCount = -1;
+    @Override
+    public void afterContentGenerated(ByteArrayOutputStream headerStream, ByteArrayOutputStream contentStream, UniPattern pattern) throws IOException {
+        byte[] availableBytesForFrames = convertInt2NPTStructByte(contentStream.size() + endFrameUsedBytes, 2);
+        headerStream.write(new byte[]{availableBytesForFrames[0], availableBytesForFrames[1]});
+        headerStream.write(new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00});
+        headerStream.write(new byte[]{(byte) 0x90, 0x0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00});
+        headerStream.write(new byte[]{(byte) 0x00, 0x00, 0x19, 0x00, 0x00, 0x00, (byte) 0xBE, 0x02});
+        headerStream.write(new byte[]{
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+        });
+        // 模拟构造线层，4 * 16 = 64个字节
+        byte[] constructionLine = mockConstructionLine((contentStream.size() + endFrameUsedBytes) / 4);
+        headerStream.write(constructionLine);
+    }
+
+    private int endFrameUsedBytes = -1;
+
+    private static byte[] mockConstructionLine(int totalFrameCount){
+        byte[] frameCountBytes = convertInt2NPTStructByte(totalFrameCount - 3, 2);
+
+        byte[] bytes = new byte[]{(byte) 0x88, 0x00, 0x00, 0x00, 0x46, 0x00, 0x01, 0x00, 0x7F, 0, (byte) 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00,
+                (byte) 0xD8, 0x00, 0x60, 0x00, 0x1E, 0x00, frameCountBytes[0], frameCountBytes[1], (byte) 0x96, 0x01, (byte) 0xE4, (byte) 0xFD, 0x00, 0x00, 0x00, 0x00,
+                0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x01, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+        };
+        return bytes;
+    }
 
     @Override
     public ByteArrayOutputStream genEndFrameList(UniPattern pattern) throws IOException {
@@ -121,29 +124,12 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
         UniFrame lastFrame = uniFrames.get(uniFrames.size() - 1);
         byte[] bytes = PatternPointUtil.convertUniFrame(lastFrame, skip2SecondOriginal);
         // 需要记录最后写入的帧 占用的字节数
-        endFrameCount = bytes.length;
+        endFrameUsedBytes = bytes.length;
         result.write(bytes);
         result.write(new byte[]{0x1F, 0, 0, 0});
         // 增加最后 0x1F 0 0 0 占用的字节
-        endFrameCount += 4;
+        endFrameUsedBytes += 4;
         return result;
-    }
-
-    @Override
-    public void afterContentGenerated(ByteArrayOutputStream headerStream, ByteArrayOutputStream contentStream, UniPattern pattern) throws IOException {
-        // 这个地方要写入 总帧数占用得字节个数
-        // 因为结尾还有2个帧需要写入，所以这里得加上那个数值
-        headerStream.write(convertInt2NPTStructByte(contentStream.size() + endFrameCount, 4));
-        // 这个位置要写入  “从第一帧开始算起到结尾有几帧（四个字节为一帧），不管这一帧的用途”
-        headerStream.write(convertInt2NPTStructByte((contentStream.size() + endFrameCount) / 4, 2));
-        // 这个位置要写入  和车缝有关得总帧数
-        int sewingFrameCount = PatternHeaderUtil.getSewingFrameCount(pattern);
-        headerStream.write(convertInt2NPTStructByte(sewingFrameCount, 2));
-        headerStream.write(convertInt2NPTStructByte(minX, 2));
-        headerStream.write(convertInt2NPTStructByte(maxX, 2));
-        headerStream.write(convertInt2NPTStructByte(minY, 2));
-        headerStream.write(convertInt2NPTStructByte(maxY, 2));
-        headerStream.write(new byte[12]);
     }
 
     /**
@@ -190,6 +176,25 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
         }
         if(uniPattern.getSecondOrigin() == null){
             uniPattern.setSecondOrigin(PatternPointUtil.convertFrame2Point(temp));
+        }
+    }
+
+    /**
+     * 上亿似乎不能出现 6,0,0  61,0,0这样的情况
+     * @return
+     */
+    private void handleZeroSewing(List<UniFrame> allFrames){
+        for (int i = 0; i < allFrames.size() - 1; i++) {
+            UniFrame uniFrame = allFrames.get(i);
+            if(uniFrame.getControlCode() == SECOND_ORIGIN_POINT.code &&
+                    uniFrame.getX() == 0 && uniFrame.getY() == 0) {
+                UniFrame next = allFrames.get(i + 1);
+//                if(SystemTopControlCode.isSewingControlCode(next.getControlCode()) &&
+//                    next.getX() == 0 && next.getY() == 0)   {
+//
+//                }
+                allFrames.remove(0);
+            }
         }
     }
 }

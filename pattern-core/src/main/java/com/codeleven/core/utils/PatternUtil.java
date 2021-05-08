@@ -225,13 +225,4 @@ public class PatternUtil {
         }
         return result;
     }
-
-    public static UniFrame getFirstFrame(UniPattern pattern){
-        if(pattern == null){
-            throw new RuntimeException("必须传入UniPattern，才能重新设置原点");
-        }
-        List<UniChildPattern> patterns = sortChildPatternByWeight(pattern.getChildList().values());
-        List<UniFrame> patternData = patterns.get(0).getPatternData();
-        return patternData.get(0);
-    }
 }

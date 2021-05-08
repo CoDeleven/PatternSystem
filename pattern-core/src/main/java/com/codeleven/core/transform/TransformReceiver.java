@@ -72,11 +72,11 @@ public class TransformReceiver {
                 break;
             case CHANGE_FIRST_SEWING:
                 doSetFirstSewingForChild(data[0]);
-                updateSecondOriginalPoint(PatternUtil.getFirstFrame(uniPattern));
+                updateSecondOriginalPoint(PatternPointUtil.getFirstFrame(uniPattern));
                 break;
             case CHANGE_PATTERN_SEWING_SEQ:
                 doChangeChildPatternSeq(data[0], data[1]);
-                updateSecondOriginalPoint(PatternUtil.getFirstFrame(uniPattern));
+                updateSecondOriginalPoint(PatternPointUtil.getFirstFrame(uniPattern));
                 break;
         }
     }
