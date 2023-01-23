@@ -1,7 +1,6 @@
 package com.codeleven.core.output;
 
 import com.codeleven.common.constants.LockMethod;
-import com.codeleven.common.constants.SystemTopControlCode;
 import com.codeleven.common.constants.SystemTopFileStruct;
 import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
@@ -19,9 +18,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.codeleven.common.constants.SystemTopControlCode.*;
-import static com.codeleven.core.utils.PatternPointUtil.computeInt2NPTOneByte;
 
-public class NPTOutputHStrategy implements IOutputHStrategy {
+public class NPTOutputStrategy implements IOutputStrategy {
 
     // 用于记录最大值，最小值。在处理了Content时候自动填充这些属性
     int minX = Integer.MAX_VALUE;
@@ -151,9 +149,9 @@ public class NPTOutputHStrategy implements IOutputHStrategy {
      *
      */
     private void extendContent(UniPattern uniPattern) {
-        this.handleLock(uniPattern);
-        // 处理次元点
-        this.handleSecondPoint(uniPattern);
+            this.handleLock(uniPattern);
+            // 处理次元点
+            this.handleSecondPoint(uniPattern);
     }
 
     private void handleLock(UniPattern uniPattern) {

@@ -23,7 +23,7 @@ public class PatternTransformCommand {
         this.childPatternNo = childPatternNo;
     }
 
-    public PatternTransformCommand(TransformOperation operation, int childPatternNo, int... param) {
+    public PatternTransformCommand(TransformOperation operation, long childPatternNo, int... param) {
         this.operation = operation;
         this.param = param;
         this.childPatternNo = childPatternNo;

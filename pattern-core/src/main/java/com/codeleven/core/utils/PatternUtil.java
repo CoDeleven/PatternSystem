@@ -7,23 +7,27 @@ import com.aspose.cad.fileformats.cad.cadobjects.CadLwPolyline;
 import com.aspose.cad.fileformats.cad.cadobjects.ICadBaseEntity;
 import com.aspose.cad.fileformats.cad.cadobjects.polylines.CadPolyline;
 import com.aspose.cad.fileformats.cad.cadobjects.vertices.Cad3DVertex;
-import com.codeleven.common.entity.UniChildPattern;
-import com.codeleven.common.entity.UniFrame;
+import com.codeleven.common.constants.LockMethod;
+import com.codeleven.common.constants.TransformOperation;
+import com.codeleven.common.entity.*;
 import com.codeleven.common.constants.SystemTopControlCode;
-import com.codeleven.common.entity.UniPattern;
-import com.codeleven.common.entity.UniPoint;
+import com.codeleven.core.TransformHelper;
+import com.codeleven.core.transform.PatternTransformHelper;
+import com.codeleven.core.transform.TransformReceiver;
+import com.codeleven.core.transform.command.ChangeFirstSewingCommand;
+import com.codeleven.core.transform.command.ITransformCommand;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class PatternUtil {
 
-    /**
-     * 复制花样最后一帧，并复制一个全新的针，追加在尾部，修改这个新针的控制码
-     *
-     * @param pattern  花样
-     * @param controlCode 控制码
-     */
+//    /**
+//     * 复制花样最后一帧，并复制一个全新的针，追加在尾部，修改这个新针的控制码
+//     *
+//     * @param pattern  花样
+//     * @param controlCode 控制码
+//     */
 //    public static void appendLastFrameWithDiffControlCode(UniPattern pattern, SystemTopControlCode controlCode){
 //        List<UniFrame> frames = pattern.getFrames();
 //        UniFrame lastFrame = frames.get(frames.size() - 1);
@@ -74,28 +78,29 @@ public class PatternUtil {
      * 移除相同的Frame，仅留下一个。（存在功能码和车缝时，仅保留车缝）
      */
     public static void removeSameCoordinatorFrameForSewing(List<UniFrame> frameList){
-        UniFrame lastFrame = null;
-        int endIndex = -1;
-        for (int i = 0; i < frameList.size(); i++) {
-            UniFrame cur = frameList.get(i);
-            if(lastFrame == null){
-                lastFrame = cur;
-                continue;
-            }
-
-            if(cur.equals(lastFrame)){
-                endIndex = i;
-                break;
-            }
-            lastFrame = cur;
-        }
-        if(endIndex == -1){
-            return;
-        }
-        int initSize = frameList.size();
-        for (int i = endIndex; i < initSize; i++) {
-            frameList.remove(endIndex);
-        }
+        frameList.remove(frameList.size() - 1);
+//        UniFrame lastFrame = null;
+//        int endIndex = -1;
+//        for (int i = 0; i < frameList.size(); i++) {
+//            UniFrame cur = frameList.get(i);
+//            if(lastFrame == null){
+//                lastFrame = cur;
+//                continue;
+//            }
+//
+//            if(cur.equals(lastFrame)){
+//                endIndex = i;
+//                break;
+//            }
+//            lastFrame = cur;
+//        }
+//        if(endIndex == -1){
+//            return;
+//        }
+//        int initSize = frameList.size();
+//        for (int i = endIndex; i < initSize; i++) {
+//            frameList.remove(endIndex);
+//        }
     }
 
     public static boolean isOriginalPoint(UniFrame frame){
@@ -157,6 +162,83 @@ public class PatternUtil {
             totalFrames.addAll(childPattern.getPatternData());
         }
         return totalFrames;
+    }
+
+    public static List<UniFrame> findAllSkipFrames(UniPattern pattern){
+        List<UniFrame> skipFrames = new ArrayList<>();
+        for (int i = 0; i < pattern.getChildList().size(); i++) {
+            UniChildPattern child = getChildPatternBySortedIndex(pattern, i);
+            UniFrame firstSkipFrame = getFirstSkipFrame(child.getPatternData());
+            UniFrame lastCutFrame = child.getPatternData().get(child.getPatternData().size() - 1);
+            if(firstSkipFrame != null){
+                skipFrames.add(firstSkipFrame);
+                // 一般是剪线
+                UniFrame genSkipFrame = lastCutFrame.copyFrame();
+                skipFrames.add(genSkipFrame);
+            }
+        }
+        return skipFrames;
+    }
+
+    public static UniPattern generateSkipFrameWithSingleSewing(UniPattern entirePattern){
+        UniPattern pattern = new UniPattern();
+        List<UniFrame> allSkipFrames = findAllSkipFrames(entirePattern);
+        List<UniFrame> result = new ArrayList<>();
+        for (int i = 0; i < allSkipFrames.size() - 1;i++) {
+            if(i == 0){
+                result.addAll(handleSkipFrames(null, allSkipFrames.get(i)));
+            } else {
+                result.addAll(handleSkipFrames(allSkipFrames.get(i), allSkipFrames.get(i + 1)));
+            }
+        }
+
+        UniChildPattern childPattern = new UniChildPattern();
+        childPattern.setPatternData(result);
+        childPattern.setLockMethod(LockMethod.NONE);
+        childPattern.setPattern(pattern);
+
+        Map<Long, UniChildPattern> uniChildPatternMap = new HashMap<>();
+        uniChildPatternMap.put(new Random().nextLong(), childPattern);
+        pattern.setChildList(uniChildPatternMap);
+
+        return pattern;
+    }
+
+    private static List<UniFrame> handleSkipFrames(UniFrame f1, UniFrame f2) {
+        List<UniFrame> frames = new ArrayList<>();
+        if(f1 == null){
+            f1 = new UniFrame(0, 0, SystemTopControlCode.CUT.code);
+        }
+        if(f1.getControlCode() == SystemTopControlCode.CUT.code && f2.getControlCode() == SystemTopControlCode.SKIP.code) {
+            if(f1.getX() != 0 && f1.getY() != 0){
+                // 处理第一个点是 原点得情况
+                frames.add(new UniFrame(f1.getX(), f1.getY(), SystemTopControlCode.SKIP.code));
+            }
+            // 处理第一个点是 原点得情况
+            frames.add(new UniFrame(f1.getX(), f1.getY(), SystemTopControlCode.DROP_NEEDLE.code));
+            // 跳缝
+            frames.add(new UniFrame(f2.getX(), f1.getY(), SystemTopControlCode.SKIP.code));
+            // 中间点
+            frames.add(new UniFrame(f2.getX(), f1.getY(), SystemTopControlCode.DROP_NEEDLE.code));
+            // 跳缝
+            frames.add(new UniFrame(f2.getX(), f2.getY(), SystemTopControlCode.SKIP.code));
+            // 终点
+            frames.add(new UniFrame(f2.getX(), f2.getY(), SystemTopControlCode.DROP_NEEDLE.code));
+            // 剪线
+            frames.add(new UniFrame(f2.getX(), f2.getY(), SystemTopControlCode.CUT.code));
+
+            System.out.println("deltY:" + (f2.getY() - f1.getY()) + ", deltX:" + (f2.getX() -f1.getX()));
+        }
+        return frames;
+    }
+
+    public static UniFrame getFirstSkipFrame(List<UniFrame> frames){
+        for (int i = 0; i < frames.size(); i++) {
+            if(SystemTopControlCode.isSkipControlCode(frames.get(i).getControlCode())){
+                return frames.get(i);
+            }
+        }
+        return null;
     }
 
     public static int getFirstSewingIndex(List<UniFrame> frames){
@@ -224,5 +306,50 @@ public class PatternUtil {
             result.add(uniFrame.copyFrame());
         }
         return result;
+    }
+
+    public static void changeWeightByLRTB(UniPattern uniPattern) {
+        List<UniChildPattern> childs = sortChildPatternByWeight(uniPattern.getChildList().values());
+        Map<UniPoint, UniChildPattern> waitChangeMap = new HashMap<>();
+        // 收集每个子花样的最左上的点
+        for (UniChildPattern child : childs) {
+            UniPoint result;
+            int minX = Integer.MAX_VALUE;
+            int maxY = Integer.MIN_VALUE;
+            int index = 0;
+            for (int i = 0; i < child.getPatternData().size(); i++) {
+                UniFrame patternDatum = child.getPatternData().get(i);
+                if(patternDatum.getX() < minX && patternDatum.getY() > maxY){
+                    minX = patternDatum.getX();
+                    maxY = patternDatum.getY();
+                    index = i;
+                }
+            }
+
+            result = new UniPoint(minX, maxY);
+            result.setIndex(index);
+            waitChangeMap.put(result, child);
+        }
+
+        List<UniPoint> collect = waitChangeMap.keySet().stream().sorted((o1, o2) -> computeWeight(o2) - computeWeight(o1)).collect(Collectors.toList());
+
+        int weight = Byte.MAX_VALUE;
+        // 更新每个子花样的起缝点
+        PatternTransformHelper helper = new PatternTransformHelper(uniPattern);
+        for (UniPoint uniPoint : collect) {
+            UniChildPattern uniChildPattern = waitChangeMap.get(uniPoint);
+            PatternTransformCommand transformCommand = new PatternTransformCommand(TransformOperation.CHANGE_FIRST_SEWING,
+                    uniChildPattern.getId(), uniPoint.getIndex());
+            ITransformCommand transformCommand1 = helper.genCommand(transformCommand);
+            transformCommand1.execute();
+
+            uniChildPattern.setWeight(weight--);
+        }
+
+    }
+
+    public static int computeWeight(UniPoint point){
+        int weight = point.getX() * -100_0000 + point.getY() * -100;
+        return weight;
     }
 }

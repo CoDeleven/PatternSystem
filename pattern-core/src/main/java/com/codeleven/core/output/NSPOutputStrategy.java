@@ -5,7 +5,6 @@ import com.codeleven.common.entity.UniChildPattern;
 import com.codeleven.common.entity.UniFrame;
 import com.codeleven.common.entity.UniPattern;
 import com.codeleven.common.entity.UniPoint;
-import com.codeleven.core.utils.PatternHeaderUtil;
 import com.codeleven.core.utils.PatternLockUtil;
 import com.codeleven.core.utils.PatternPointUtil;
 import com.codeleven.core.utils.PatternUtil;
@@ -19,7 +18,7 @@ import java.util.List;
 import static com.codeleven.common.constants.SystemTopControlCode.*;
 import static com.codeleven.common.constants.SystemTopControlCode.SECOND_ORIGIN_POINT;
 
-public class NSPOutputStrategy implements IOutputHStrategy{
+public class NSPOutputStrategy implements IOutputStrategy {
     // 用于记录最大值，最小值。在处理了Content时候自动填充这些属性
     int minX = Integer.MAX_VALUE;
     int minY = Integer.MAX_VALUE;

@@ -178,17 +178,27 @@ public class TransformReceiver {
         List<UniFrame> listFromTargetToEnd = PatternUtil.copyList(frames.subList(targetPointIndexInChild, frames.size()));
         // subList 包含 0下标，不包含 targetPointIndex下标
         List<UniFrame> listFromFirstToExcludedTarget = PatternUtil.copyList(frames.subList(0, targetPointIndexInChild));
-        // 本来第一帧是跳缝，修改为车缝
-        listFromFirstToExcludedTarget.get(0).setControlCode(SystemTopControlCode.HIGH_SEWING.getCode());
+        // 如果是封闭图形，首位会有两个点相接，移除第一个点
+        if(isFengBi){
+            listFromFirstToExcludedTarget.remove(0);
+        } else {
+            // 本来第一帧是跳缝，修改为车缝
+            listFromFirstToExcludedTarget.get(0).setControlCode(SystemTopControlCode.HIGH_SEWING.getCode());
+        }
 
-        // 新的最后一帧
+        // 获取最后的 非车缝控制 帧
         List<UniFrame> lastControlCodeFrames = PatternUtil.getLastControlCodeFrames(listFromTargetToEnd);
         PatternUtil.removeSameCoordinatorFrameForSewing(listFromTargetToEnd);
         newFrameList.addAll(0, listFromTargetToEnd);
         newFrameList.addAll(listFromFirstToExcludedTarget);
 
+        // 封闭图形得在最后增加上这个点
+        if(isFengBi){
+            UniFrame firstClone = newFrameList.get(0).copyFrame();
+            newFrameList.add(firstClone);
+        }
 
-        // 更新第一帧，设置为高速缝
+        // 更新第一帧，设置为高速缝。补上后几个的非车缝控制码
         for (int i = 0; i < lastControlCodeFrames.size(); i++) {
             UniFrame lastFrame = newFrameList.get(newFrameList.size() - 1).copyFrame();
             lastFrame.setControlCode(lastControlCodeFrames.get(i).getControlCode());
@@ -197,6 +207,7 @@ public class TransformReceiver {
         for (UniFrame lastControlCodeFrame : lastControlCodeFrames) {
             lastControlCodeFrame.setControlCode(SystemTopControlCode.HIGH_SEWING.getCode());
         }
+
         // 如果第一帧是原点位置，修改为车缝
         if(!PatternUtil.isOriginalPoint(newFrameList.get(0))) {
             newFrameList.get(0).setControlCode(SystemTopControlCode.SKIP.code);

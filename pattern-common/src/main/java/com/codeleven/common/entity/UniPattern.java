@@ -22,6 +22,6 @@ public class UniPattern {
     private String dxfPath;                         // DXF花样数据路径（来自文件对象服务）
     private Map<Long, UniChildPattern> childList;     // 子花样
     private boolean checkSimilarPoint;  // 是否检查相似点（距离只有1的），弹窗提示，如果确认就继续，否认就结束
-    private int offsetX;
-    private int offsetY;
+    private int offsetX;                // 记录用户给定的偏移数值，用于记录
+    private int offsetY;                // 记录用户给定的偏移，
 }

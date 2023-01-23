@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class UniOutput {
-    public byte[] output(UniPattern uniPattern, IOutputHStrategy strategy){
+    public byte[] output(UniPattern uniPattern, IOutputStrategy strategy){
         try {
             ByteArrayOutputStream headerStream = strategy.genFileHeader(uniPattern);
             ByteArrayOutputStream contentStream = strategy.genContent(uniPattern);

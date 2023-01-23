@@ -5,7 +5,7 @@ import com.codeleven.common.entity.UniPattern;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public interface IOutputHStrategy {
+public interface IOutputStrategy {
     ByteArrayOutputStream genFileHeader(UniPattern pattern) throws IOException;
 
     ByteArrayOutputStream genContent(UniPattern pattern) throws IOException;

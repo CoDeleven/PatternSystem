@@ -6,7 +6,7 @@ import lombok.Data;
 public class UniPoint {
     public final int x;
     public final int y;
-
+    public int index;
     public UniPoint(Integer x, Integer y) {
         this.x = x;
         this.y = y;
